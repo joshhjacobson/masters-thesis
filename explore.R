@@ -4,10 +4,13 @@ library(RandomFields)
 ?RMbiwm
 ?RFsimulate
 
+
+# Example from RMbiwm -----------------------------------------------------
+
 ## Example
-RFoptions(seed=0) ## *ANY* simulation will have the random seed 0; set
+RFoptions(seed = 0, height = 4) ## *ANY* simulation will have the random seed 0; set
 ## RFoptions(seed=NA) to make them all random again
-x <- y <- seq(-10, 10, 0.2)
+x <- y <- seq(-20, 20, 0.2)
 model <- RMbiwm(nudiag=c(0.3, 2), nured=1, rhored=1, cdiag=c(1, 1.5),
                 s=c(1, 1, 2))
 plot(model)
@@ -23,15 +26,12 @@ plot(RFsimulate(mod, x, y))
 
 
 
-## ##
-## ONLY TWO VERY BASIC EXAMPLES ARE GIVEN HERE ##
-## see ##
+
+# Example from RFsimulate -------------------------------------------------
+
 ## ?RMsimulate.more.examples ##
-## and ##
 ## ?RFsimulateAdvanced ##
 ## for more examples ##
-## ##
-#############################################################
 
 #############################################################
 ## ##
@@ -73,4 +73,26 @@ x.seq.cond <- y.seq.cond <- seq(-1.5, 1.5, length=n)
 model <- RMexp()
 cond <- RFsimulate(model, x=x.seq.cond, y=y.seq.cond, data=data)
 plot(cond, data)
+
+
+
+# Examples from paper ------------------------------------------------------
+
+RFoptions(seed = 0, height = 4)
+M1 <- c(0.9, 0.6)
+M2 <- c(sqrt(0.19), 0.8)
+model <- RMmatrix(M = M1, RMwhittle(nu = 0.3)) + 
+  RMmatrix(M = M2, RMwhittle(nu = 2))
+x <- y <- seq(-10, 10, 0.2)
+simu <- RFsimulate(model, x, y)
+plot(simu)
+
+
+
+# Weather data example ----------------------------------------------------
+
+data('weather')
+Dist.mat <- as.vector(RFearth2dist(weather[, 3:4]))
+
+
               
