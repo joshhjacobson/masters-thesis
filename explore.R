@@ -1,5 +1,10 @@
 
+## Exploring the RandomFields package, primarily the RFsimulate 
+## function and the Bi-Whittle Matern model (RMbiwm)
+
 library(RandomFields)
+
+quartz() # necessary to plot random fields realizations outside of rstudio
 
 ?RMbiwm
 ?RFsimulate
@@ -8,8 +13,10 @@ library(RandomFields)
 # Example from RMbiwm -----------------------------------------------------
 
 ## Example
-RFoptions(seed = 0, height = 4) ## *ANY* simulation will have the random seed 0; set
+RFoptions(seed = 0, height = 4) 
+## *ANY* simulation will have the random seed 0; set
 ## RFoptions(seed=NA) to make them all random again
+
 x <- y <- seq(-20, 20, 0.2)
 model <- RMbiwm(nudiag=c(0.3, 2), nured=1, rhored=1, cdiag=c(1, 1.5),
                 s=c(1, 1, 2))
@@ -18,11 +25,11 @@ plot(RFsimulate(model, x, y))
 
 
 ## Test
-x <- y <- seq(-100, 100, 0.2)
-mod <- RMbiwm(nu = c(3/2, 3/2, 3/2), s = c(0.5, 0.5, 0.5), cdiag = c(1, 1),
+x <- y <- seq(-20, 20, 0.2)
+model <- RMbiwm(nu = c(1.5, 1.5, 1.5), s = c(0.5, 0.5, 0.5), cdiag = c(1, 1),
               rhored = 0.8) 
-plot(mod)
-plot(RFsimulate(mod, x, y))
+plot(model)
+plot(RFsimulate(model, x, y))
 
 
 
@@ -39,8 +46,8 @@ plot(RFsimulate(mod, x, y))
 ## ##
 #############################################################
 ## first let us look at the list of implemented models
-RFgetModelNames(type="positive definite", domain="single variable",
-                iso="isotropic")
+# RFgetModelNames(type="positive definite", domain="single variable",
+#                iso="isotropic")
 ## our choice is the exponential model;
 ## the model includes nugget effect and the mean:
 model <- RMexp(var=5, scale=10) + # with variance 4 and scale 10
@@ -59,6 +66,10 @@ plot(simu)
 ## ##
 ## Conditional simulation ##
 ## ##
+
+## NOTE: We are not concerned with condition simulation in
+## this project
+
 #############################################################
 # first we simulate some random values at a
 # 100 random locations:
@@ -89,7 +100,7 @@ plot(simu)
 
 
 
-# Weather data example ----------------------------------------------------
+# Weather data example from Schlather2015 ----------------------------------------------------
 
 data('weather')
 Dist.mat <- as.vector(RFearth2dist(weather[, 3:4]))
