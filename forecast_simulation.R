@@ -49,6 +49,9 @@ Y <- fields$variable1
 # forecast
 zbar <- fields$variable2
 
+# zbar[zbar > 1] <- 1
+# zbar[zbar <1] <- 0
+
 
 # build ensemble as matrix where each column is a realization
 zbar <- replicate(11, zbar)

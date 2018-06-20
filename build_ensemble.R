@@ -1,4 +1,5 @@
 
+library(RandomFields)
 
 ## function to construct forecast ensemble
 
