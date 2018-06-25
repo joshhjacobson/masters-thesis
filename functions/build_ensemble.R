@@ -1,9 +1,9 @@
 
-library(RandomFields)
+require(RandomFields)
 
 ## function to construct forecast ensemble
 
-build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=TRUE) {
+build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=FALSE) {
   
   # xi: controls standard variance of model
   # x, y: field dimensions
@@ -46,9 +46,9 @@ build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=TRUE) {
 
 
 ## testing
-xi <- seq(0.5,0.9,0.05)
-for (ii in xi) {
-  build_ensemble(xi=ii)
-}
+# xi <- seq(0.5,0.9,0.05)
+# for (ii in xi) {
+#   build_ensemble(xi=ii)
+# }
 
 
