@@ -3,7 +3,7 @@
 ## Objective: collect statistics on mean surface points above a range of 
 ## thresholds for observation and ensemble mean for a single xi value
 
-source("build_ensemble.R")
+source("functions/build_ensemble.R")
 
 thresh <- seq(0, 4, 0.5)
 

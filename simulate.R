@@ -53,3 +53,22 @@ getmode(dat)
 # max: 0.8
 # histogram has positive skew
 
+# Note: with 30 observations
+# mean: 0.697
+# mode: 0.6 (6)
+# max: 0.9
+# histogram has slight positive skew but with peak at 0.9
+
+# > ?RFplotSimulation
+# > image(matrix(test$X1,201,201))
+# > library(fields)
+# > image.plot(matrix(test$X1,201,201))
+# > image.plot(matrix(test$X1,201,201),col=terrain.colors(256))
+# > ?image.plot
+# > ?terrain.colors
+# > image.plot(matrix(test$X1,201,201),col=two.colors(start="white",stop="black"))
+
+#heat.colors, topo.colors, terrain.colors, rainbow, hsv, par
+
+# v + geom_raster(aes(fill = density)) +
+#   geom_contour(colour = "white")
