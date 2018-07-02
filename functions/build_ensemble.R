@@ -20,7 +20,7 @@ build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=FALSE) {
   
   ## parameters
   smooth <- c(1.5, 1.5, 1.5)
-  scale <- c(3, 3, 3) # set all to 1
+  scale <- c(4, 4, 4) # all same
   corr <- c(1, 1)
   rho <- 0.8
   
@@ -116,10 +116,11 @@ build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=FALSE) {
 }
 
 
-## testing
-# xi <- seq(0.5,0.9,0.05)
-# for (ii in xi) {
-#   build_ensemble(xi=ii)
-# }
+## Testing
+xi <- seq(0.25,0.75,0.25)
+for (ii in xi) {
+  #quartz()
+  build_ensemble(xi=ii, plot=TRUE)
+ }
 
 

@@ -1,7 +1,7 @@
 
 
 require(RandomFields)
-#source("build_ensemble.R")
+source("build_ensemble.R")
 
 ## Function to calculate mean squared difference between
 ## observation and ensemble threshold means
