@@ -16,7 +16,7 @@ source("functions/build_ensemble.R")
 source("functions/rank_obs.R")
 
 xi <- 0.5 # weight ratio between ensemble mean and variance
-samp_size <- 100
+samp_size <- 30
 
 rank_sim <- function(xi, tau) {
   data <- build_ensemble(xi)
@@ -25,9 +25,12 @@ rank_sim <- function(xi, tau) {
 
 ## collect rank data on tau values
 tau <- seq(0, 4, 0.5)
-tau_rank_dat <- data.frame()
+tau_rank_dat <- data.frame(row.names = 1:samp_size)
 for(t in tau) {
-  tau_rank_dat[paste(t)] <- replicate(samp_size, rank_sim(xi, t))
+  col <- paste(t)
+  print(col)
+  tau_rank_dat <- cbind(tau_rank_dat, 
+                        col = replicate(samp_size, rank_sim(xi, t)))
 }
 
 ## plot histograms for each tau

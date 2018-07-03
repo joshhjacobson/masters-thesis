@@ -117,10 +117,10 @@ build_ensemble <- function(xi, x=NULL, y=NULL, n=11, plot=FALSE) {
 
 
 ## Testing
-xi <- seq(0.25,0.75,0.25)
-for (ii in xi) {
-  #quartz()
-  build_ensemble(xi=ii, plot=TRUE)
- }
+# xi <- seq(0.25,0.75,0.25)
+# for (ii in xi) {
+#   #quartz()
+#   build_ensemble(xi=ii, plot=TRUE)
+# }
 
 
