@@ -16,7 +16,7 @@ source("functions/build_ensemble.R")
 source("functions/rank_obs.R")
 
 xi <- 0.5 # weight ratio between ensemble mean and variance
-samp_size <- 30
+samp_size <- 100
 
 rank_sim <- function(xi, tau) {
   data <- build_ensemble(xi)
@@ -40,4 +40,7 @@ for (i in 1:length(tau)) {
        main = paste("tau = ", tau[i], sep = ""),
        xlab = "Observation rank" )
 }
+
+
+# save(tau_rank_dat, file = "tau_rank_dat_n100_xi050.RData")
 
