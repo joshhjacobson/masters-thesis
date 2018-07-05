@@ -7,7 +7,7 @@ require(RandomFields)
 
 build_ensemble <- function(xi, x=NULL, y=NULL, n=11) {
   
-  # xi: controls standard variance of model
+  # xi: # weighting ratio between ensemble mean and variance
   # x, y: field dimensions
   # n: number of ensemble members
   # plot: display or not?

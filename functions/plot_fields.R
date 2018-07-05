@@ -13,7 +13,7 @@ plot_fields <- function(fields, x=NULL, y=NULL) {
     x <- y <- seq(-20, 20, 0.2)
   }
   
-  #source("grid_arrange_shared_legend.R")
+  source("~/GitHub/random-fields/functions/grid_arrange_shared_legend.R")
   
   ## format data as xyz dataframe 
   dat <- expand.grid(x = x, y = y)
@@ -25,41 +25,31 @@ plot_fields <- function(fields, x=NULL, y=NULL) {
   ## collect each plot in a list
   fplots <- list()
   
-  ## Observation plot
-  fplots[[1]] <- ggplot(dat, aes(x, y)) +
-    # geom_raster(aes(fill = 1*(z > 1))) +
-    geom_raster(aes(fill = z)) +
-    scale_fill_gradientn(colours = brewer.pal(9, "Blues"),
-                         limits=c(l.min, l.max),
-                         breaks=seq(l.min,l.max,by=1)) +
-    theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5), # center title
-          axis.text.x = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks = element_blank()) +
-    labs(x="",y="",title="Observation") 
-  
-  ## Ensemble plots
-  for (i in 2:ncol(fields))
+  ## build plot list
+  for (i in 1:ncol(fields))
     local({
       i <- i
       # update data being plotted
       dat$z <- fields[,i]
-      p1 <- ggplot(dat, aes(x, y)) +
-        # geom_raster(aes(fill = 1*(z > 1))) +
+      p <- ggplot(dat, aes(x, y)) +
         geom_raster(aes(fill = z)) +
-        scale_fill_gradientn(colours = brewer.pal(9, "Blues"),
+        scale_fill_gradientn(name = "Surface",
+                             colours = brewer.pal(9, "Blues"),
                              limits=c(l.min, l.max),
                              breaks=seq(l.min,l.max,by=1)) +
-        theme_minimal() +
+        theme_void() +
         theme(plot.title = element_text(hjust = 0.5), # center title
               axis.text.x = element_blank(),
               axis.text.y = element_blank(),
-              axis.ticks = element_blank()) +
-        labs(x="",y="",title=paste("Forecast", i, sep = " ")) 
-      # print(i)
-      # print(p1)
-      fplots[[i]] <<- p1  # add each plot into plot list
+              axis.ticks = element_blank())
+        
+      if (i == 1) {
+        p <- p + labs(x="",y="",title="Observation")
+      } else {
+        p <- p + labs(x="",y="",title=paste("Forecast", i-1, sep = " "))
+      }
+      # add each plot into plot list
+      fplots[[i]] <<- p  
     })
   
   ## arrange plots in grid

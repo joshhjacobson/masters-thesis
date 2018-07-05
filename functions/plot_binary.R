@@ -10,7 +10,7 @@ plot_binary <- function(fields, tau, x=NULL, y=NULL) {
   # fields: observation and ensemble data formatted as cols of a dataframe
   # tau: masking threshold
   
-  #source("multiplot.R")
+  source("~/GitHub/random-fields/functions/multiplot.R")
   
   if (is.null(x) | is.null(y)) {
     x <- y <- seq(-20, 20, 0.2)
@@ -23,40 +23,34 @@ plot_binary <- function(fields, tau, x=NULL, y=NULL) {
   ## collect each plot in a list
   fplots <- list()
   
-  ## Observation plot
-  fplots[[1]] <- ggplot(dat, aes(x, y)) +
-    geom_raster(aes(fill = z > tau)) +
-    scale_fill_manual(values = c("white", "black")) +
-    theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5), # center title
-          axis.text.x = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks = element_blank(),
-          legend.position="none") +
-    labs(x="",y="",title="Observation") 
-  
-  ## Ensemble plots
-  for (i in 2:ncol(fields))
+  ## build plot list
+  for (i in 1:ncol(fields))
     local({
       i <- i
       # update data being plotted
       dat$z <- fields[,i]
-      p1 <- ggplot(dat, aes(x, y)) +
+      p <- ggplot(dat, aes(x, y)) +
         geom_raster(aes(fill = z > tau)) +
-        scale_fill_manual(values = c("white", "black")) +
-        theme_minimal() +
+        scale_fill_manual(values = c("TRUE" = "#00035b", "FALSE" = "#d8dcd6")) +
+        theme_void() +
         theme(plot.title = element_text(hjust = 0.5), # center title
               axis.text.x = element_blank(),
               axis.text.y = element_blank(),
               axis.ticks = element_blank(),
-              legend.position="none") +
-        labs(x="",y="",title=paste("Forecast", i, sep = " ")) 
+              legend.position="none") 
       
-      fplots[[i]] <<- p1  # add each plot into plot list
+      if (i == 1) {
+        p <- p + labs(x="",y="",title="Observation")
+      } else {
+        p <- p + labs(x="",y="",title=paste("Forecast", i-1, sep = " "))
+      }
+      # add each plot into plot list
+      fplots[[i]] <<- p  
     })
   
   ## arrange plots in grid
   quartz()
-  multiplot(plotlist = fplots, cols = 4)
+  multiplot(plotlist = fplots, 
+            layout = matrix(1:ncol(fields), nrow=ncol(fields)/4, byrow=TRUE))
   
 }
