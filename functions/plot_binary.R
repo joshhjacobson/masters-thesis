@@ -49,7 +49,7 @@ plot_binary <- function(fields, tau, x=NULL, y=NULL) {
     })
   
   ## arrange plots in grid
-  quartz()
+  # quartz()
   multiplot(plotlist = fplots, 
             layout = matrix(1:ncol(fields), nrow=ncol(fields)/4, byrow=TRUE))
   
