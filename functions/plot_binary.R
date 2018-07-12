@@ -5,7 +5,7 @@ require(ggplot2)
 ## Function to plot observation and forecast fields 
 ## in a grid using tau as a binary mask
 
-plot_binary <- function(fields, tau, x=NULL, y=NULL) {
+plot_binary <- function(fields, tau=1, x=NULL, y=NULL) {
   
   # fields: observation and ensemble data formatted as cols of a dataframe
   # tau: masking threshold

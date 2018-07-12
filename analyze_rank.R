@@ -8,8 +8,8 @@ library(grid)
 library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
-# load("~/GitHub/random-fields/data/fields_data_us_xi075_n11.RData")
-data <- fields_data_ds_xi075_n11
+load("~/GitHub/random-fields/data/fields_data_s444_n11.RData")
+data <- fields_data
 
 ## collect rank data on tau values
 tau <- seq(0, 4, 0.5)
@@ -44,13 +44,6 @@ grid.arrange(
               bottom=textGrob("observation rank"), 
               left=textGrob("count", rot=90))
 )
-
-# par(mfrow=c(3,3))
-# for (i in 1:length(tau)) {
-#   hist(tau_rank_dat[,i],
-#        main = paste("tau = ", tau[i], sep = ""),
-#        xlab = "Observation rank" )
-# }
 
 
 
