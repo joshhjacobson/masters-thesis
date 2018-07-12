@@ -57,25 +57,6 @@ plot_fields <- function(fields, x=NULL, y=NULL) {
   grid_arrange_shared_legend(fplots, position = "right")
   
   
-  ## Second idea: good but not great
-  #dim <- sqrt(length(fields$variable1))
-  # nrows <- round((ncol(ensemble)+1)/4)
-  # quartz()
-  # par(mfrow=c(nrows, 4))
-  # image.plot(matrix(fields$variable1,dim,dim), col=brewer.pal(9, "Blues"),
-  #            main="Observation")
-  # for (index in 1:ncol(ensemble)) {
-  #   image.plot(matrix(ensemble[,index],dim,dim), col=brewer.pal(9, "Blues"),
-  #              main=paste("Forecast", index))
-  # }
-  
-  ## First idea
-  # quartz() #separate window for each ensemble
-  # for (index in 1:ncol(ensemble)) {
-  #   fields$variable2 <- ensemble[,index]
-  #   plot(fields)
-  # }
-  
   ## For comparison
   # quartz()
   # plot(fields)

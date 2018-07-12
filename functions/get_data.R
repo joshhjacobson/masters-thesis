@@ -23,5 +23,5 @@ get_data <- function(samp_size, xi=0.75, n=11) {
 }
 
 # fields_data_xi075_n11 <- get_data(200)
-# save(fields_data_xi075_n11, 
-#      file = "~/GitHub/random-fields/data/fields_data_xi075_n11.RData")
+# save(fields_data_ds_xi075_n11,
+#      file = "~/GitHub/random-fields/data/fields_data_ds_xi075_n11.RData")

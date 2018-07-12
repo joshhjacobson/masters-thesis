@@ -5,47 +5,47 @@
 require(RandomFields)
 
 
-build_ensemble <- function(xi, x=NULL, y=NULL, n=11) {
+build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   
-  # xi: # weighting ratio between ensemble mean and variance
-  # x, y: field dimensions
-  # n: number of ensemble members
-  # plot: display or not?
+  # range (list of 2): scale parameters for observation and ensemble; c(s_1, s_2)
+  # x, y (arrays): field grid points
+  # n (num): number of ensemble members
+
+  s_1 <- range[1]
+  s_2 <- range[2]
   
   if (is.null(x) | is.null(y)) {
     x <- y <- seq(-20, 20, 0.2)
   }
   
   ## parameters
-  smooth <- c(1.5, 1.5, 1.5)
-  #scale <- c(2, 4, 6) # all same
-  scale <- c(4, 4, 4)
-  corr <- c(1, 1)
-  rho <- 0.8
+  smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes
+  scale <- c(s_1, sqrt(s_1*s_2), s_2)   #range: s = 1/a  
+  var <- c(1, 1)                        #variances
+  rho <- 0.8                            #rho: percent cross correlation 
+  xi <- 0.75                            #weight ratio between ensemble 
+                                        #mean and variance
   
-  ## ensemble
+  
+  ## ensemble perturbation 
   model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE, 
-                             scale = scale[3], var = corr[2])
+                             scale = scale[3], var = var[2])
   omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
 
   ## model
-  model_biwm <- RMbiwm(nu = smooth, s = scale, cdiag = corr, rhored = rho)
+  model_biwm <- RMbiwm(nu = smooth, s = scale, cdiag = var, rhored = rho)
   fields <- RFsimulate(model_biwm, x, y)
 
   zbar <- fields$variable2
   zbar <- replicate(n, zbar)
   ensemble <- xi*zbar + sqrt(1-xi^2)*omega
+  
+  ## realization
+  realization <- data.frame(fields$variable1, ensemble)
+  names(realization) <- c("obs", paste("f", 1:n, sep = ""))
 
-  return(data.frame(fields$variable1, ensemble))
+  return(realization)
   
 }
-
-
-## Testing
-# xi <- seq(0.25,0.75,0.25)
-# for (ii in xi) {
-#   #quartz()
-#   build_ensemble(xi=ii)
-# }
 
 

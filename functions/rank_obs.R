@@ -10,7 +10,9 @@ rank_obs <- function(data, tau) {
   # tau: threshold
   
   m <- colMeans(data > tau)
-  r <- rank(m)[[1]] # ties are averaged
+  r <- rank(m, ties.method = "random")[[1]] 
+  
+  # if everything same (ie 0), drop case?
   
   return(r)
 }
