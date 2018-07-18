@@ -3,6 +3,7 @@
 ## Function to construct forecast ensemble
 
 require(RandomFields)
+set.seed(7332)
 
 
 build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
@@ -43,6 +44,9 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   ## realization
   realization <- data.frame(fields$variable1, ensemble)
   names(realization) <- c("obs", paste("f", 1:n, sep = ""))
+  
+  ## sanity check
+  print(paste("sample corr: ", cor(fields$variable1, fields$variable2), sep = ""))
 
   return(realization)
   

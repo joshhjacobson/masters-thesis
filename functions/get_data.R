@@ -3,10 +3,10 @@
 ## Function to build a list of ensemble data frames
 
 ## Local
-# source("~/GitHub/random-fields/functions/build_ensemble.R")
+source("~/GitHub/random-fields/functions/build_ensemble.R")
 
 ## Remote
-source("build_ensemble.R")
+# source("build_ensemble.R")
 
 get_data <- function(samp_size, range, n=11) {
   
