@@ -5,7 +5,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-plot_stats <- function(dat) {
+plot_stats <- function(dat, title) {
   
   #dat: data frame (or similar) with columns to be plotted
   
@@ -21,7 +21,8 @@ plot_stats <- function(dat) {
       facet_wrap(vars(key)) +
       geom_vline(data=mdat, aes(xintercept=value),
                  linetype="dashed", size = 0.2, colour = "#fd8d3c") +
-      labs(x = "statistic")
+      theme(plot.title = element_text(hjust = 0.5)) +
+      labs(x = "statistic", title = title)
     
 }
 

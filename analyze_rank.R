@@ -8,7 +8,7 @@ library(grid)
 library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
-load("~/GitHub/random-fields/data/fields_data_s45.RData")
+load("~/GitHub/random-fields/data/fields/fields_data_s45.5.RData")
 data <- fields_data
 
 ## collect rank data on tau values
