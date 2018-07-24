@@ -5,11 +5,11 @@
 library(ggplot2)
 source("~/GitHub/random-fields/functions/plot_binary.R")
 
-load("~/GitHub/random-fields/data/fields_data_s42.RData")
+load("~/GitHub/random-fields/data/fields_rho0/fields_data_rho0_s46.RData")
 data <- fields_data
 
 ## save plots to pdf for visual analysis
-pdf('~/GitHub/random-fields/images/binary_fields_s42_tau00.pdf')
+pdf('~/GitHub/random-fields/images/fields/binary_fields_rho0_s46_tau00.pdf')
 for(i in 1:20) {
   plot_binary(data[[i]], tau = 0)
 }

@@ -1,5 +1,6 @@
 
 ## Simulate 1K realizations for a variety of range values
+set.seed(7332)
 
 ## Local 
 source("~/GitHub/random-fields/functions/get_data.R")

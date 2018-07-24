@@ -3,20 +3,21 @@
 ## Using simulated data, analyze rank statistics for each threshold (tau)
 ## in a range from 0-4 and build a grid of histograms for all tau
 
+set.seed(7332) # ties between rank broken at random
+
 library(ggplot2)
 library(grid)
 library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
-load("~/GitHub/random-fields/data/fields/fields_data_s45.5.RData")
+load("~/GitHub/random-fields/data/fields_rho0/fields_data_rho0_s46.RData")
 data <- fields_data
 
 ## collect rank data on tau values
 tau <- seq(0, 4, 0.5)
 tau_rank_dat <- data.frame(row.names = 1:length(data))
 for(t in tau) {
-  col <- paste(t)
-  print(col)
+  print(t)
   tau_rank_dat <- cbind(tau_rank_dat, 
                         col = sapply(data, rank_obs, tau=t))
 }
