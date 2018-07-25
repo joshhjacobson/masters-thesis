@@ -3,6 +3,7 @@
 ## Function to construct forecast ensemble
 
 require(RandomFields)
+# RFoptions(seed=NA)
 
 build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   
@@ -21,36 +22,41 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes
   rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
   var <- c(1, 1)                        #variances
-  rho <- 0.8                            #rho: percent cross correlation 
+  rho <- 0                            #rho: percent cross correlation 
   xi <- rho                             #weight ratio between ensemble 
                                         #mean and variance
   
   
-  ## ensemble perturbation 
-  model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE, 
-                             scale = rng[3], var = var[2])
-  omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
-
   ## model
   model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
   fields <- RFsimulate(model_biwm, x, y)
-
-  ensemble_mean <- fields$variable2
-  ensemble_mean <- replicate(n, ensemble_mean)
   
-  ## if there is an error, I think it may be here:
-  ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
-  ## ensemble <- (const)*(40401x1 array) + (const)*(40401x11 matrix)
+  ## temporarily return just obs and mean
+  return(data.frame(fields$variable1, fields$variable2))
   
   
-  ## realization
-  realization <- data.frame(fields$variable1, ensemble)
-  names(realization) <- c("obs", paste("f", 1:n, sep = ""))
-  
-  ## sanity check
-  print(paste("sample corr: ", cor(fields$variable1, fields$variable2), sep = ""))
-
-  return(realization)
+  # ## ensemble perturbation 
+  # model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE, 
+  #                            scale = rng[3], var = var[2])
+  # omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
+  # 
+  # 
+  # ensemble_mean <- fields$variable2
+  # ensemble_mean <- replicate(n, ensemble_mean)
+  # 
+  # ## if there is an error, I think it may be here:
+  # ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
+  # ## ensemble <- (const)*(40401x1 array) + (const)*(40401x11 matrix)
+  # 
+  # 
+  # ## realization
+  # realization <- data.frame(fields$variable1, ensemble)
+  # names(realization) <- c("obs", paste("f", 1:n, sep = ""))
+  # 
+  # ## sanity check
+  # print(paste("sample corr: ", cor(fields$variable1, fields$variable2), sep = ""))
+  # 
+  # return(realization)
   
 }
 
