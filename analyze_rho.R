@@ -16,7 +16,7 @@ if(local) {
   rho_rng_dat <- list()
   for(s2 in range) {
     print(paste("range param: ", s2, sep=""))
-    rho_rng_dat[[ii]] <- get_data(15, c(4,s2))
+    rho_rng_dat[[ii]] <- get_data(8, c(4,s2))
     ii <- ii + 1
   }
   
@@ -30,7 +30,7 @@ if(local) {
   library(gridExtra)
   source("~/GitHub/random-fields/functions/rank_obs.R")
   
-  # load("~GitHub/random-fields/data/tests/rho_rng_dat.RData")
+  # load("~/GitHub/random-fields/data/tests/rho_rng_dat.RData")
   dat <- rho_rng_dat
   
   # obtain data frame with range as columns and obs rank as rows

@@ -8,7 +8,7 @@ source("~/GitHub/random-fields/functions/build_ensemble.R")
 ## Remote
 # source("build_ensemble.R")
 
-get_data <- function(samp_size, range, n=11) {
+get_data <- function(samp_size, range, n=1) {
   
   # samp_size: number of realizations to be simulated 
   # ...: parameters passed to build_ensemble()

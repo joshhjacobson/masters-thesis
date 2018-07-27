@@ -3,7 +3,7 @@
 ## Function to construct forecast ensemble
 
 require(RandomFields)
-# RFoptions(seed=NA)
+# RFoptions(seed=7332)
 
 build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   
@@ -32,31 +32,33 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   fields <- RFsimulate(model_biwm, x, y)
   
   ## temporarily return just obs and mean
-  return(data.frame(fields$variable1, fields$variable2))
+  # return(data.frame(fields$variable1, fields$variable2))
   
   
-  # ## ensemble perturbation 
-  # model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE, 
-  #                            scale = rng[3], var = var[2])
+  ## ensemble perturbation
+  model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE,
+                             scale = rng[3], var = var[2])
   # omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
-  # 
-  # 
-  # ensemble_mean <- fields$variable2
-  # ensemble_mean <- replicate(n, ensemble_mean)
-  # 
-  # ## if there is an error, I think it may be here:
-  # ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
-  # ## ensemble <- (const)*(40401x1 array) + (const)*(40401x11 matrix)
-  # 
-  # 
-  # ## realization
-  # realization <- data.frame(fields$variable1, ensemble)
-  # names(realization) <- c("obs", paste("f", 1:n, sep = ""))
-  # 
-  # ## sanity check
+  ## new method
+  omega <- data.frame(RFsimulate(model_whittle, x, y, n=n))
+
+
+  ensemble_mean <- fields$variable2
+  ensemble_mean <- replicate(n, ensemble_mean)
+
+  ## if there is an error, I think it may be here:
+  ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
+  ## ensemble <- (const)*(40401x1 array) + (const)*(40401x11 matrix)
+
+
+  ## realization
+  realization <- data.frame(fields$variable1, ensemble)
+  names(realization) <- c("obs", paste("f", 1:n, sep = ""))
+
+  ## sanity check
   # print(paste("sample corr: ", cor(fields$variable1, fields$variable2), sep = ""))
-  # 
-  # return(realization)
+
+  return(realization)
   
 }
 
