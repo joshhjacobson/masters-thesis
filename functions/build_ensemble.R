@@ -3,7 +3,6 @@
 ## Function to construct forecast ensemble
 
 require(RandomFields)
-# RFoptions(seed=7332)
 
 build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   
@@ -22,9 +21,7 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes
   rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
   var <- c(1, 1)                        #variances
-  rho <- 0                            #rho: percent cross correlation 
-  xi <- rho                             #weight ratio between ensemble 
-                                        #mean and variance
+  rho <- 0.8                            #rho: percent cross correlation 
   
   
   ## model
@@ -34,21 +31,25 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   ## temporarily return just obs and mean
   # return(data.frame(fields$variable1, fields$variable2))
   
-  
   ## ensemble perturbation
   model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE,
                              scale = rng[3], var = var[2])
   # omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
   ## new method
-  omega <- data.frame(RFsimulate(model_whittle, x, y, n=n))
+  omega <- RFsimulate(model_whittle, x, y, n=n)
+  omega <- as.matrix(data.frame(omega))
 
-
+  
   ensemble_mean <- fields$variable2
   ensemble_mean <- replicate(n, ensemble_mean)
+  
+  ## weight ratio between ensemble mean and variance (force xi = true rho)
+  cov_mat <- RFcov(model_biwm, x=0)
+  xi <- cov_mat[1,1,2] ## c_12
 
   ## if there is an error, I think it may be here:
   ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
-  ## ensemble <- (const)*(40401x1 array) + (const)*(40401x11 matrix)
+  ## ensemble <- (const)*(40401x11 matrix) + (const)*(40401x11 matrix)
 
 
   ## realization

@@ -3,6 +3,8 @@
 ## Using simulated data, analyze rank statistics for each threshold (tau)
 ## in a range from 0-4 and build a grid of histograms for all tau
 
+set.seed(7332) # ties between rank broken at random
+
 library(ggplot2)
 library(grid)
 library(gridExtra)

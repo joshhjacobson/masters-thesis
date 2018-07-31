@@ -4,8 +4,6 @@
 ## of the ensemble means, where 'mean' refers to the mean number of values
 ## above a given threshold (tau)
 
-set.seed(7332) # ties between rank broken at random
-
 rank_obs <- function(data, tau) {
   
   # data: observation and ensemble in cols of data frame
