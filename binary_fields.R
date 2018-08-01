@@ -5,15 +5,25 @@
 library(ggplot2)
 source("~/GitHub/random-fields/functions/plot_binary.R")
 
-load("~/GitHub/random-fields/data/fields_rho0/fields_data_rho0_s46.RData")
-data <- fields_data
+s_2 <- seq(1,6,0.5)
+nam <- paste("fields_data_s4", s_2, sep = "")
 
-## save plots to pdf for visual analysis
-pdf('~/GitHub/random-fields/images/fields/binary_fields_rho0_s46_tau00.pdf')
-for(i in 1:20) {
-  plot_binary(data[[i]], tau = 0)
+for (ii in 1:length(nam)){
+  
+  print(paste("range param: ", s_2[ii], sep = ""))
+  
+  load(paste("~/GitHub/random-fields/data/fields/", nam[ii], ".RData", sep=""))
+  data <- fields_data
+  
+  ## save plots to pdf for visual analysis
+  pdf(paste("~/GitHub/random-fields/images/fields/", nam[ii], "_tau00.pdf", sep=""))
+  for(i in 1:20) {
+    plot_binary(data[[i]], tau = 0)
+  }
+  # lapply(data, plot_binary, tau = 1)
+  dev.off()
+  
 }
-# lapply(data, plot_binary, tau = 1)
-dev.off()
+
 
 

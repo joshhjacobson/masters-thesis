@@ -4,6 +4,7 @@
 
 ## Local
 source("~/GitHub/random-fields/functions/build_ensemble.R")
+# RFoptions(seed=7332)
 
 ## Remote
 # source("build_ensemble.R")

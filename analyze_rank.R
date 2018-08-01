@@ -10,7 +10,10 @@ library(grid)
 library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
-load("~/GitHub/random-fields/data/fields_rho0/fields_data_rho0_s46.RData")
+s_2 <- 1
+nam <- paste("fields_data_s4", s_2, sep = "")
+
+load(paste("~/GitHub/random-fields/data/fields/", nam, ".RData", sep = ""))
 data <- fields_data
 
 ## collect rank data on tau values
