@@ -13,10 +13,10 @@ library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_pointwise.R")
 
 ## load data
-load("~/GitHub/random-fields/data/old/fields/fields_data_s44.RData")
+load("~/GitHub/random-fields/data/fields/fields_data_s44.RData")
 dat_rho08 <- fields_data
 
-load("~/GitHub/random-fields/data/old/fields_rho0/fields_data_rho0_s44.RData")
+load("~/GitHub/random-fields/data/fields_rho0/fields_data_rho0_s44.RData")
 dat_rho00 <- fields_data
 
 

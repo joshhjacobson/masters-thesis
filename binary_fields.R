@@ -6,13 +6,13 @@ library(ggplot2)
 source("~/GitHub/random-fields/functions/plot_binary.R")
 
 s_2 <- seq(1,6,0.5)
-nam <- paste("fields_data_s4", s_2, sep = "")
+nam <- paste("fields_data_rho0_s4", s_2, sep = "")
 
 for (ii in 1:length(nam)){
   
   print(paste("range param: ", s_2[ii], sep = ""))
   
-  load(paste("~/GitHub/random-fields/data/fields/", nam[ii], ".RData", sep=""))
+  load(paste("~/GitHub/random-fields/data/fields_rho0/", nam[ii], ".RData", sep=""))
   data <- fields_data
   
   ## save plots to pdf for visual analysis

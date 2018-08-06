@@ -1,7 +1,7 @@
 
 
-## Analyze distribution of rank between observation and ensemble mean
-## with rho = 0 for 1K samples at a range of thresholds 
+## Analyze distribution of rank between observation and ensemble mean, then
+## observation and f1, with rho = 0 for 1K samples at a range of thresholds 
 # RFoptions(seed=7332)
 
 ## partition tasks by working envionments
