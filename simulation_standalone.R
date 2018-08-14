@@ -81,14 +81,15 @@ get_data <- function(samp_size, range, n=11) {
 
 # Simulation script -------------------------------------------------------
 
-## Simulate 1K realizations for a variety of range values
+## Simulate N realizations for a variety of range values
+N <- 10
 s_1 <- 4
 s_2 <- seq(1, 6, 0.5)
 
 for (ii in s_2) {
   print(paste("range param: ", ii))
   nam <- paste("fields_data_s", s_1, ii, sep = "")
-  fields_data <- get_data(200, c(s_1,ii))
+  fields_data <- get_data(N, c(s_1,ii))
   
   ## Local
   save(fields_data,
