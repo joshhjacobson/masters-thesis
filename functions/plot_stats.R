@@ -13,7 +13,7 @@ plot_stats <- function(dat, title) {
   mdat <- as_tibble(colMeans(dat))
   mdat$mems <- c("obs", paste("f", 1:len, sep = ""))
   
-  dat %>%
+  p <- dat %>%
     as_tibble(.) %>%
     gather(., factor_key = TRUE) %>%
     ggplot(., aes(x = value)) +
@@ -23,6 +23,8 @@ plot_stats <- function(dat, title) {
                  linetype="dashed", size = 0.2, colour = "#fd8d3c") +
       theme(plot.title = element_text(hjust = 0.5)) +
       labs(x = "statistic", title = title)
+  
+  print(p)
     
 }
 

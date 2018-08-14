@@ -9,8 +9,7 @@ source("~/GitHub/random-fields/functions/get_data.R")
 # source("get_data.R")
 
 s_1 <- 4
-# s_2 <- seq(1, 6, 0.5)
-s_2 <- seq(2,6,2)
+s_2 <- seq(1, 6, 0.5)
 
 for (ii in s_2) {
   print(paste("range param: ", ii))

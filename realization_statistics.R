@@ -1,29 +1,38 @@
 
 ## Calculate mean statistics for each realization column and rbind to dataframe
+source("~/GitHub/random-fields/functions/plot_stats.R")
 
-range <- "s45.5"
 tau <- 0
-title <- paste(range, "_tau0", tau, sep = "")
-load(paste("~/GitHub/random-fields/data/fields/fields_data_", 
-           range, ".RData", sep=""))
+s_2 <- seq(1,6,0.5)
+nam <- paste("rho0_s4", s_2, sep = "")
+# nam <- paste("rho0_s4", s_2, sep = "")
 
 mean_stat <- function(data, tau) {
-  
   # data: observation and ensemble in cols of data frame
   # tau: threshold
   return(colMeans(data > tau))
 }
 
-## store mean stat data as rows of new data frame
-field_means <- do.call("rbind", lapply(fields_data, mean_stat, tau=tau))
-save(field_means,
-     file = paste("~/GitHub/random-fields/data/mean_dat/field_means_",
-                  title, ".RData", sep = ""))
 
-## plot column distributions
-source("~/GitHub/random-fields/functions/plot_stats.R")
-quartz()
-plot_stats(field_means, title)
+pdf("~/GitHub/random-fields/images/dists/means_dist_rho00_tau00_n1000.pdf")
 
+for (ii in 1:length(nam)){
+  
+  print(paste("range param: ", s_2[ii], sep = ""))
+  
+  load(paste("/Volumes/My\ Passport/Forecasting\ Data/fields_rho0/fields_data_",
+             nam[ii], ".RData", sep=""))
+  data <- fields_data
+
+  ## store mean stat data as rows of new data frame
+  field_means <- do.call("rbind", lapply(data, mean_stat, tau=tau))
+  save(field_means,
+       file = paste("/Volumes/My\ Passport/Forecasting\ Data/mean_dat/field_means_",
+                    nam[ii], ".RData", sep = ""))
+  
+  ## plot column distributions
+  plot_stats(field_means, nam[ii])
+}
+dev.off()
 
 

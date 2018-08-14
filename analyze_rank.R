@@ -11,16 +11,19 @@ library(gridExtra)
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
 s_2 <- seq(1,6,0.5)
-nam <- paste("fields_data_rho0_s4", s_2, sep = "")
+# nam <- paste("fields_data_rho0_s4", s_2, sep = "")
+nam <- paste("exp_fields_rho0_s4", s_2, sep = "")
 
-pdf("~/GitHub/random-fields/images/hists/rank_hists_rho00_n1000.pdf")
+pdf("~/GitHub/random-fields/images/transformed/hists/exp_rank_hists_rho00_n1000.pdf")
 
 for (ii in 1:length(nam)){
   
   print(paste("range param: ", s_2[ii], sep = ""))
   
-  load(paste("~/GitHub/random-fields/data/fields_rho0/", nam[ii], ".RData", sep = ""))
-  data <- fields_data
+  # load(paste("~/GitHub/random-fields/data/fields_rho0/", nam[ii], ".RData", sep = ""))
+  # data <- fields_data
+  load(paste("/Volumes/My\ Passport/Forecasting\ Data/transformed/fields_rho0/", nam[ii], ".RData", sep=""))
+  data <- exp_dat
   
   ## collect rank data on tau values
   tau <- seq(0, 4, 0.5)
