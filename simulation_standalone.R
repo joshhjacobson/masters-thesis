@@ -55,6 +55,7 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   realization <- data.frame(fields$variable1, ensemble)
   names(realization) <- c("obs", paste("f", 1:n, sep = ""))
   
+  
   return(realization)
 }
 
@@ -92,9 +93,9 @@ for (ii in s_2) {
   fields_data <- get_data(N, c(s_1,ii))
   
   ## Local
-  save(fields_data,
-       file = paste("~/GitHub/random-fields/data/fields/",
-                    nam, ".RData", sep = ""))
+  # save(fields_data,
+  #      file = paste("~/GitHub/random-fields/data/fields/",
+  #                   nam, ".RData", sep = ""))
   
   ## Remote
   # save(fields_data,
