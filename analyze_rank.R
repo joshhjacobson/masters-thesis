@@ -17,7 +17,7 @@ s_2 <- seq(1,6,0.5)
 nam <- paste("fields_data_rho0_s4", s_2, sep = "")
 
 ## get list of true xi values for each range
-xi_list <- get_xi(s_2)
+xi_list <- get_xi(s_2, rho=0)
 
 ## load and plot data
 pdf("~/GitHub/random-fields/images/hists/rank_hists_rho00_n1000-new.pdf")

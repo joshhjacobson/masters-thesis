@@ -3,15 +3,15 @@
 ## Sandalone file containing all functions and code to simulate realization data
 
 library(RandomFields)
-# RFoptions(seed = 7332)
 
 
 # Functions ---------------------------------------------------------------
 
 ## Function to construct single realization
-build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
+build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
   
   # range (list of 2): scale parameters for observation and ensemble; c(s_1, s_2)
+  # rho: percent cross correlation 
   # x, y (arrays): field grid points
   # n (num): number of ensemble members
   
@@ -26,7 +26,6 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes / differentiability
   rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
   var <- c(1, 1)                        #variances
-  rho <- 0.8                            #rho: percent cross correlation 
   
   
   ## model
@@ -61,7 +60,7 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
 
 
 ## Function to build a list of ensemble data frames
-get_data <- function(samp_size, range, n=11) {
+get_data <- function(samp_size, range, rho=0.8, n=11) {
   
   # samp_size: number of realizations to be simulated 
   # ...: parameters passed to build_ensemble()
@@ -71,7 +70,7 @@ get_data <- function(samp_size, range, n=11) {
   
   for (i in 1:samp_size) {
     print(i)
-    fields <- build_ensemble(range = range, n=n)
+    fields <- build_ensemble(range=range, rho=rho, n=n)
     data[[i]] <- fields
   }
   
@@ -83,6 +82,7 @@ get_data <- function(samp_size, range, n=11) {
 # Simulation script -------------------------------------------------------
 
 ## Simulate N realizations for a variety of range values
+set.seed(7332)
 N <- 10
 s_1 <- 4
 s_2 <- seq(1, 6, 0.5)

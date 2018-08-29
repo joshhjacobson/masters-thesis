@@ -4,12 +4,11 @@
 
 ## Local
 source("~/GitHub/random-fields/functions/build_ensemble.R")
-# RFoptions(seed=7332)
 
 ## Remote
 # source("build_ensemble.R")
 
-get_data <- function(samp_size, range, n=11) {
+get_data <- function(samp_size, range, rho=0.8, n=11) {
   
   # samp_size: number of realizations to be simulated 
   # ...: parameters passed to build_ensemble()
@@ -19,7 +18,7 @@ get_data <- function(samp_size, range, n=11) {
   
   for (i in 1:samp_size) {
     print(i)
-    fields <- build_ensemble(range = range, n=n)
+    fields <- build_ensemble(range=range, rho=rho, n=n)
     data[[i]] <- fields
   }
   

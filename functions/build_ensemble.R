@@ -4,9 +4,10 @@
 
 require(RandomFields)
 
-build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
+build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
   
   # range (list of 2): scale parameters for observation and ensemble; c(s_1, s_2)
+  # rho: percent cross correlation 
   # x, y (arrays): field grid points
   # n (num): number of ensemble members
 
@@ -21,8 +22,6 @@ build_ensemble <- function(range, x=NULL, y=NULL, n=11) {
   smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes
   rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
   var <- c(1, 1)                        #variances
-  rho <- 0.8                            #rho: percent cross correlation 
-  
   
   ## model
   model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
