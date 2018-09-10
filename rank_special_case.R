@@ -12,11 +12,13 @@ print(args) #list the command line arguments.
 
 batch <- as.numeric(args[6])
 
-set.seed(0) # ties between rank broken at random
+set.seed(0) # ties between rank broken at random 
+## NOTE: seed is set at the begining of each batch of 500 samples
+
 source("~/GitHub/random-fields/functions/rank_obs.R")
 
 ## dataset: short_range or random_noise (still need to update 2 other lines below)
-dataset <- "short_range"
+dataset <- "random_noise"
 nam <- paste(dataset, "_samples_0", batch, sep="")
 
 print(nam)
@@ -35,8 +37,8 @@ if("try-error" %in% class(ld)) rank_dat <- initDF()
 
 ## load fields data
 load(paste("/Volumes/Passport/Forecasting/big_dat/", nam, ".RData", sep=""))
-data <- short_range
-# data <- random_noise
+# data <- short_range
+data <- random_noise
 
 
 ## rank and append to list
@@ -49,6 +51,6 @@ save(rank_dat,
                 dataset, "_ranks.RData", sep =""))
 
 ## remove data
-rm(data, short_range)
-# rm(data, random_noise)
+# rm(data, short_range)
+rm(data, random_noise)
 
