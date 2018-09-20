@@ -7,11 +7,24 @@ library(RandomFields)
 
 # Functions ---------------------------------------------------------------
 
+## Functions to numerically determine rho value that produces desired xi
+rho_root <- function(rho, xi, smooth, rng, var) {
+  model <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
+  return (RFcov(model, x=0)[1,1,2] - xi)
+}
+rhored_search <- function(xi, smooth, rng, var) {
+  # xi (float): desired weight ratio between ensemble mean and perturbation
+  # NOTE: other model parameters passed to RMbiwm() are assumed to be set and constant
+  rhored <- uniroot(rho_root, c(xi, 1), xi=xi, smooth=smooth, rng=rng, var=var)$root
+  return (rhored)
+}
+
+
 ## Function to construct single realization
-build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
+build_ensemble <- function(range, xi=0.8, x=NULL, y=NULL, n=11) {
   
   # range (list of 2): scale parameters for observation and ensemble; c(s_1, s_2)
-  # rho: percent cross correlation 
+  # xi (float): desired weight ratio between ensemble mean and perturbation
   # x, y (arrays): field grid points
   # n (num): number of ensemble members
   
@@ -23,13 +36,13 @@ build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
   }
   
   ## parameters
-  smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes / differentiability
-  rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
-  var <- c(1, 1)                        #variances
-  
+  smooth <- c(1.5, 1.5, 1.5)                     #nu: smoothnes / differentiability
+  rng <- c(s_1, sqrt(s_1*s_2), s_2)              #range: s = 1/a  
+  var <- c(1, 1)                                 #variances
+  rhored <- rhored_search(xi, smooth, rng, var)  #rho: percent cross correlation 
   
   ## model
-  model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
+  model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rhored)
   fields <- RFsimulate(model_biwm, x, y)
   
   ## ensemble perturbation
@@ -43,9 +56,10 @@ build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
   ensemble_mean <- fields$variable2
   ensemble_mean <- replicate(n, ensemble_mean)
   
+  ## NOTE: xi is set as 0.8, rhored is now adjusted above s.t. (true_rho = xi) holds
   ## weight ratio between ensemble mean and variance (force xi = true_rho)
-  cov_mat <- RFcov(model_biwm, x=0)
-  xi <- cov_mat[1,1,2] ## c_12
+  # cov_mat <- RFcov(model_biwm, x=0)
+  # xi <- cov_mat[1,1,2] ## c_12
   
   ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
   
@@ -60,7 +74,7 @@ build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
 
 
 ## Function to build a list of ensemble data frames
-get_data <- function(samp_size, range, rho=0.8, n=11) {
+get_data <- function(samp_size, range, xi=0.8, n=11) {
   
   # samp_size: number of realizations to be simulated 
   # ...: parameters passed to build_ensemble()
@@ -70,7 +84,7 @@ get_data <- function(samp_size, range, rho=0.8, n=11) {
   
   for (i in 1:samp_size) {
     print(i)
-    fields <- build_ensemble(range=range, rho=rho, n=n)
+    fields <- build_ensemble(range=range, xi=xi, n=n)
     data[[i]] <- fields
   }
   
@@ -85,7 +99,7 @@ get_data <- function(samp_size, range, rho=0.8, n=11) {
 set.seed(7332)
 N <- 10
 s_1 <- 4
-s_2 <- seq(1, 6, 0.5)
+s_2 <- seq(2, 6, 0.25)
 
 for (ii in s_2) {
   print(paste("range param: ", ii))
@@ -93,9 +107,9 @@ for (ii in s_2) {
   fields_data <- get_data(N, c(s_1,ii))
   
   ## Local
-  # save(fields_data,
-  #      file = paste("~/GitHub/random-fields/data/fields/",
-  #                   nam, ".RData", sep = ""))
+  save(fields_data,
+       file = paste("~/GitHub/random-fields/data/fields/",
+                    nam, ".RData", sep = ""))
   
   ## Remote
   # save(fields_data,

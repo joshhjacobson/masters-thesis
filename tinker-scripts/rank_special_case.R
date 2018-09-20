@@ -31,7 +31,7 @@ initDF <- function(e=NULL) {
   return(rank_dat)
 }
 ld <- try(load(paste("/Volumes/Passport/Forecasting/big_dat/rank_data/", 
-                     dataset, "_ranks.RData", sep ="")))
+                     dataset, "_ranks_n11.RData", sep ="")))
 if("try-error" %in% class(ld)) rank_dat <- initDF()
 
 
@@ -41,14 +41,16 @@ load(paste("/Volumes/Passport/Forecasting/big_dat/", nam, ".RData", sep=""))
 data <- random_noise
 
 
-## rank and append to list
-rank_dat <- c(rank_dat, sapply(data, rank_obs, tau=0))
+## rank from first 11 ensemble mems and append to list
+# rank_dat <- c(rank_dat, sapply(data, rank_obs, tau=0))
+# TEST: sapply(seq_along(data), function(i) print(i))
+rank_dat <- c(rank_dat, sapply(seq_along(data), function(i) rank_obs(data[[i]][,1:12], tau=0)))
 
 
 ## save rank data
 save(rank_dat,
      file=paste("/Volumes/Passport/Forecasting/big_dat/rank_data/", 
-                dataset, "_ranks.RData", sep =""))
+                dataset, "_ranks_n11.RData", sep =""))
 
 ## remove data
 # rm(data, short_range)

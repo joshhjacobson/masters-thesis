@@ -3,14 +3,15 @@
 ## Function to construct forecast ensemble
 
 require(RandomFields)
+source("~/GitHub/random-fields/functions/rhored_search.R")
 
-build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
+build_ensemble <- function(range, xi=0.8, x=NULL, y=NULL, n=11) {
   
   # range (list of 2): scale parameters for observation and ensemble; c(s_1, s_2)
-  # rho: percent cross correlation 
+  # xi (float): desired weight ratio between ensemble mean and perturbation
   # x, y (arrays): field grid points
   # n (num): number of ensemble members
-
+  
   s_1 <- range[1]
   s_2 <- range[2]
   
@@ -19,47 +20,39 @@ build_ensemble <- function(range, rho=0.8, x=NULL, y=NULL, n=11) {
   }
   
   ## parameters
-  smooth <- c(1.5, 1.5, 1.5)            #nu: smoothnes
-  rng <- c(s_1, sqrt(s_1*s_2), s_2)     #range: s = 1/a  
-  var <- c(1, 1)                        #variances
+  smooth <- c(1.5, 1.5, 1.5)                     #nu: smoothnes / differentiability
+  rng <- c(s_1, sqrt(s_1*s_2), s_2)              #range: s = 1/a  
+  var <- c(1, 1)                                 #variances
+  rhored <- rhored_search(xi, smooth, rng, var)  #rho: percent cross correlation 
   
   ## model
-  model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
+  model_biwm <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rhored)
   fields <- RFsimulate(model_biwm, x, y)
-  
-  ## temporarily return just obs and mean
-  # return(data.frame(fields$variable1, fields$variable2))
   
   ## ensemble perturbation
   model_whittle <- RMwhittle(nu = smooth[3], notinvnu = TRUE,
                              scale = rng[3], var = var[2])
-  # omega <- replicate(n, RFsimulate(model_whittle, x, y)$variable1)
-  ## new method
+  
   omega <- RFsimulate(model_whittle, x, y, n=n)
   omega <- as.matrix(data.frame(omega))
-
+  
   
   ensemble_mean <- fields$variable2
   ensemble_mean <- replicate(n, ensemble_mean)
   
-  ## weight ratio between ensemble mean and variance (force xi = true rho)
-  cov_mat <- RFcov(model_biwm, x=0)
-  xi <- cov_mat[1,1,2] ## c_12
-
-  ## if there is an error, I think it may be here:
+  ## NOTE: xi is set as 0.8, rhored is now adjusted above s.t. (true_rho = xi) holds
+  ## weight ratio between ensemble mean and variance (force xi = true_rho)
+  # cov_mat <- RFcov(model_biwm, x=0)
+  # xi <- cov_mat[1,1,2] ## c_12
+  
   ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
-  ## ensemble <- (const)*(40401x11 matrix) + (const)*(40401x11 matrix)
-
-
+  
+  
   ## realization
   realization <- data.frame(fields$variable1, ensemble)
   names(realization) <- c("obs", paste("f", 1:n, sep = ""))
-
-  ## sanity check
-  # print(paste("sample corr: ", cor(fields$variable1, fields$variable2), sep = ""))
-
-  return(realization)
   
+  
+  return(realization)
 }
-
 

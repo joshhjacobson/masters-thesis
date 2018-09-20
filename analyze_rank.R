@@ -13,14 +13,14 @@ source("~/GitHub/random-fields/functions/rank_obs.R")
 source("~/GitHub/random-fields/functions/get_xi.R")
 
 s_2 <- seq(1,6,0.5)
-# nam <- paste("fields_data_s4", s_2, sep = "")
-nam <- paste("fields_data_rho0_s4", s_2, sep = "")
+nam <- paste("fields_data_s4", s_2, sep = "")
+# nam <- paste("fields_data_rho0_s4", s_2, sep = "")
 
 ## get list of true xi values for each range
-xi_list <- get_xi(s_2, rho=0)
+xi_list <- get_xi(s_2, rho=0.8)
 
 ## load and plot data
-pdf("~/GitHub/random-fields/images/hists/rank_hists_rho00_n1000-new.pdf")
+pdf("~/GitHub/random-fields/images/hists/rank_hists_rho08_n1000-new-hope.pdf")
 
 for (ii in 1:length(nam)){
   
@@ -28,7 +28,7 @@ for (ii in 1:length(nam)){
   
   # load(paste("~/GitHub/random-fields/data/fields_rho0/", nam[ii], ".RData", sep = ""))
   # data <- fields_data
-  load(paste("/Volumes/My\ Passport/Forecasting\ Data/fields_rho0/", nam[ii], ".RData", sep=""))
+  load(paste("/Volumes/Passport/Forecasting/fields/", nam[ii], ".RData", sep=""))
   data <- fields_data
   
   ## collect rank data on tau values
@@ -51,7 +51,7 @@ for (ii in 1:length(nam)){
         geom_histogram(binwidth = 1, fill="darkblue", color="white", size=0.25) +
         theme(plot.title = element_text(hjust = 0.5)) +
         labs(x="",y="",title=paste("tau = ", tau[i], sep = "")) +
-        scale_x_continuous(breaks=seq(0,12,2), limits=c(0,12)) 
+        scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13)) 
       
       hplots[[i]] <<- p  
     })
