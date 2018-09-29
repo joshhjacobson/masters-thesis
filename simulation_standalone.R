@@ -84,18 +84,70 @@ get_data <- function(samp_size, range, xi=0.8, smooth=c(1.5, 1.5, 1.5), var=c(1,
   
   ## determine rho for desired xi at given range
   rhored <- rhored_search(xi, smooth, rng, var)
-  print(rhored)
   
   ## collect realizations in a list
   data <- list()
-  
+
   for (i in 1:samp_size) {
     print(i)
     fields <- build_ensemble(rng=rng, rhored=rhored, xi=xi, n=n)
     data[[i]] <- fields
   }
-  
+
   return(data)
+}
+
+
+## Function to obtain the rank of an observation's mean in the distribution
+## of the ensemble means, where 'mean' refers to the mean number of values
+## above a given threshold (tau)
+rank_obs <- function(data, tau) {
+  
+  # data: observation and ensemble in cols of data frame
+  # tau: threshold
+  m <- colMeans(data > tau)
+  r <- rank(m, ties.method = "random")[[1]] 
+  return(r)
+}
+
+
+## Compute Scheuerer statistic for a given column of rank data
+scheuerer_stat <- function(col) {
+  s_stat <- sum(sapply(col, function(rank) abs(rank-5.5))) / length(col)
+}
+
+
+## Function to simulate N realizations for each (s_1,s_2) pair 
+## where s_1 is given and s_2 in in seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
+range_sim <- function(s_1, N, seed) {
+  
+  # s_1 (num): observation range parameter (s=1/a)
+  # N (num): number of samples to generate for each (s_1, s_2) pair
+  # seed (num): starting seed for entire s_1 set
+  
+  set.seed(seed)
+  s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
+  tau <- seq(0, 4, 0.5)
+  
+  rank_stats <- data.frame(row.names = tau)
+  for (ii in s_2) {
+    print(paste("range:", s_1, ii, sep=" "))
+    fields_data <- get_data(N, c(s_1,ii))
+    
+    ## rank observations
+    rank_dat <- data.frame(row.names = 1:length(data))
+    for(t in tau) {
+      rank_dat <- cbind(rank_dat,
+                        col = sapply(fields_data, rank_obs, tau=t))
+    }
+    
+    ## compute Scheuerer statistic (deviation from uniformity) for each tau col
+    rank_stats <- cbind(rank_stats,
+                        col = sapply(rank_dat, scheuerer_stat))
+    
+  }
+  names(rank_stats) <- s_2
+  return(rank_stats)
 }
 
 
@@ -103,23 +155,27 @@ get_data <- function(samp_size, range, xi=0.8, smooth=c(1.5, 1.5, 1.5), var=c(1,
 # Simulation script -------------------------------------------------------
 
 ## Simulate N realizations for a variety of range values
-set.seed(7332)
+s_1 <- seq(1,7,0.5)
 N <- 10
-s_1 <- 4
-s_2 <- seq(2, 6, 0.25)
+seed <- seq(0, 60000, 5000)
 
-for (ii in s_2) {
-  print(paste("range param: ", ii))
-  nam <- paste("fields_data_s", s_1, ii, sep = "")
-  fields_data <- get_data(N, c(s_1,ii))
+nam <- paste("rank_stats_s", s_1)
+
+for (ii in length(s_1)) {
+  
+  ## collectively save data frames in list or indiviually? (see how memory works out)
+  rank_stats <- range_sim(s_1[ii], N, seed[ii])
   
   ## Local
-  # save(fields_data,
+  # save(rank_stats,
   #      file = paste("~/GitHub/random-fields/data/",
-  #                   nam, ".RData", sep = ""))
+  #                   nam[ii], ".RData", sep = ""))
   
   ## Remote
-  # save(fields_data,
-  #      file = paste("fields_data_s", s_1, ii, ".RData", sep = ""))
+  # save(rank_stats,
+  #      file = paste(nam[ii], ".RData", sep = ""))
+  
+  ## clear data
+  # rm(rank_stats)
   
 }
