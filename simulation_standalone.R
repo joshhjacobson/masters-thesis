@@ -129,6 +129,7 @@ range_sim <- function(s_1, N, seed) {
   s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
   tau <- seq(0, 4, 0.5)
   
+  ## create data frame for each s_1 (tau x s_2)
   rank_stats <- data.frame(row.names = tau)
   for (ii in s_2) {
     print(paste("range:", s_1, ii, sep=" "))
@@ -155,27 +156,39 @@ range_sim <- function(s_1, N, seed) {
 # Simulation script -------------------------------------------------------
 
 ## Simulate N realizations for a variety of range values
-s_1 <- seq(1,7,0.5)
-N <- 10
+s_1 <- seq(1,4,0.5)
 seed <- seq(0, 60000, 5000)
+N <- 5000
 
-nam <- paste("rank_stats_s", s_1)
+ii <- 4
 
-for (ii in length(s_1)) {
-  
-  ## collectively save data frames in list or indiviually? (see how memory works out)
-  rank_stats <- range_sim(s_1[ii], N, seed[ii])
-  
-  ## Local
-  # save(rank_stats,
-  #      file = paste("~/GitHub/random-fields/data/",
-  #                   nam[ii], ".RData", sep = ""))
-  
-  ## Remote
-  # save(rank_stats,
-  #      file = paste(nam[ii], ".RData", sep = ""))
-  
-  ## clear data
-  # rm(rank_stats)
-  
-}
+nam <- paste("rank_stats_s", s_1, sep="")
+
+# collectively save data frames in list or indiviually? (see how memory works out)
+rank_stats <- range_sim(s_1[ii], N, seed[ii])
+
+## Remote
+save(rank_stats,
+     file = paste(nam[ii], ".RData", sep = ""))
+
+## clear data
+rm(rank_stats)
+
+# for (ii in 1:length(s_1)) {
+#   
+#   ## collectively save data frames in list or indiviually? (see how memory works out)
+#   rank_stats <- range_sim(s_1[ii], N, seed[ii])
+#   
+#   ## Local
+#   # save(rank_stats,
+#   #      file = paste("~/GitHub/random-fields/data/",
+#   #                   nam[ii], ".RData", sep = ""))
+#   
+#   ## Remote
+#   save(rank_stats,
+#        file = paste(nam[ii], ".RData", sep = ""))
+#   
+#   ## clear data
+#   rm(rank_stats)
+#   
+# }
