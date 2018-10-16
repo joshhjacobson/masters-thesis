@@ -2,7 +2,7 @@
 ## Load all rank_stats and produce chart for each s_1 
 source("~/GitHub/random-fields/functions/plot_scheuerer.R")
 
-s_1 <- seq(1,2,0.5)
+s_1 <- seq(1,2.5,0.5)
 nam <- paste("rank_stats_s", s_1, sep = "")
 
 pdf("~/GitHub/random-fields/images/scheuerer_charts.pdf")
