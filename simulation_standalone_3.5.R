@@ -126,8 +126,7 @@ range_sim <- function(s_1, N, seed, fname) {
   # seed (num): starting seed for entire s_1 set
   
   set.seed(seed)
-  # s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
-  s_2 <- c(seq(1.75, 3.5, 0.1*s_1), 4.9, 5.25)
+  s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
   tau <- seq(0, 4, 0.5)
   
   ## create data frame for each s_1 (tau x s_2)

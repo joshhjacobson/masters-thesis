@@ -126,14 +126,13 @@ range_sim <- function(s_1, N, seed, fname) {
   # seed (num): starting seed for entire s_1 set
   
   set.seed(seed)
-  # s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
-  s_2 <- c(1.5, 1.8, 4.5)
+  s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
   tau <- seq(0, 4, 0.5)
   
   ## create data frame for each s_1 (tau x s_2)
   initDF <- function(s_2, tau) {
     rank_stats <- data.frame(matrix(nrow=length(tau),ncol=length(s_2)), row.names = tau)
-    colnames(rank_stats) <- s_2
+    names(rank_stats) <- s_2
     return(rank_stats)
   }
   ## check whether data exits so it's not overwritten with nulls
