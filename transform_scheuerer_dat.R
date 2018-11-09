@@ -16,6 +16,12 @@ for (ii in 1:length(nam)){
   dat[[ii]] <- read.table(paste("~/GitHub/random-fields/data/", nam[ii], ".RData", sep = ""))
 }
 
+## this might come in handy later
+# rect_dat <- melt(arr_dat, value.name='Exceedence',
+#                  varnames=c('N', 'Member', 'Tau_idx', 's2_idx'))
+# write.table(rect_dat, file = paste(fname, ".RData", sep = ""))
+
+
 scheuerer_dat <- data.frame()
 for (ii in 1:length(dat)) {
   

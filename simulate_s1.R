@@ -3,7 +3,6 @@
 ## Sandalone file containing all functions and code to simulate realization data
 
 library(RandomFields)
-library(reshape2)
 
 
 # Functions ---------------------------------------------------------------
@@ -63,7 +62,6 @@ build_ensemble <- function(rng, rhored, xi=0.8, smooth=c(1.5, 1.5, 1.5), var=c(1
   ## realization
   realization <- data.frame(fields$variable1, ensemble)
   # names(realization) <- c("obs", paste("f", 1:n, sep = ""))
-  
   
   return(realization)
 }
@@ -129,11 +127,10 @@ range_sim <- function(s_1, N, fname) {
     }
     
     ## overwrite results after each s2 param completed
+    ## NOTE: change file name if restarting mid sim
     ## (convert 4D array to rectangular format)
     print("saving...")
-    rect_dat <- melt(arr_dat, value.name='Exceedence', 
-                     varnames=c('N', 'Member', 'Tau_idx', 's2_idx'))
-    write.table(rect_dat, file = paste(fname, ".RData", sep = ""))
+    save(arr_dat, file = paste(fname, ".RData", sep = ""))
     
   }
   
@@ -148,7 +145,7 @@ range_sim <- function(s_1, N, fname) {
 set.seed(10)
 s_1 <- 1
 N <- 5000
-nam <- paste("rank_dat_s", s_1, sep="")
+nam <- paste("exceed_dat_s", s_1, sep="")
 
 
 arr_dat <- range_sim(s_1, N, nam)
