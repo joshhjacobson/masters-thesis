@@ -139,7 +139,7 @@ range_sim <- function(s_1, N) {
 # Simulation script -------------------------------------------------------
 
 ## Simulate N realizations for a variety of range values
-s_1 <- 1
+s_1 <- 2.5
 N <- 5000
 
 range_sim(s_1, N)
