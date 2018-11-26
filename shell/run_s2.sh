@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1                               # Number of requested nodes
-#SBATCH --time=72:05:00                         # Max wall time 2 days
+#SBATCH --time=168:00:00                        # Max wall time 7 days
 #SBATCH --qos=long                              # Specify longer wall time
 #SBATCH --partition=smem                        # Specify high memory job
 #SBATCH --ntasks=1                              # Number of tasks per job
