@@ -10,11 +10,13 @@ plot_scheuerer_s1 <- function(t, s_dat) {
   # t: threshold exceedence level
   # s_dat: scheuerer_dat table built in transform_scheuerer_dat.R
   
-  df <- filter(s_dat, rowid == t)
-  p <- ggplot(df, aes(ratio, value, group=factor(s1))) + 
+  df <- filter(s_dat, tau == t)
+  p <- ggplot(df, aes(ratio, exceedence, group=factor(s1))) + 
     geom_line(aes(color=factor(s1)), size=0.8) +
     scale_colour_brewer(direction=-1, name="s_1") +
-    labs(x="s2/s1",y="Scheuerer Statistic",
+    scale_x_continuous(trans="log") +
+    ylim(2.5,4.25) +
+    labs(x="log ratio (s2/s1)",y="Scheuerer Statistic",
          title=paste("Deviation from uniformity for tau=", t, sep = "")) +
     theme_minimal() +
     # theme(plot.title = element_text(size=12),
