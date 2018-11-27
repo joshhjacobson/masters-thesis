@@ -5,16 +5,12 @@ require(ggplot2)
 ## Function to plot observation and forecast fields 
 ## in a grid using tau as a binary mask
 
-plot_binary <- function(fields, tau=1, x=NULL, y=NULL) {
+plot_binary <- function(fields, tau=1) {
   
   # fields: observation and ensemble data formatted as cols of a dataframe
   # tau: masking threshold
   
-  source("~/GitHub/random-fields/functions/multiplot.R")
-  
-  if (is.null(x) | is.null(y)) {
-    x <- y <- seq(-20, 20, 0.2)
-  }
+  x <- y <- seq(-20, 20, 0.2)
   
   ## format data as xyz dataframe 
   dat <- expand.grid(x = x, y = y)
@@ -40,17 +36,17 @@ plot_binary <- function(fields, tau=1, x=NULL, y=NULL) {
               legend.position="none") 
       
       if (i == 1) {
-        p <- p + labs(x="",y="",title="Observation")
+        p <- p + labs(x="",y="",title="Obs.")
       } else {
-        p <- p + labs(x="",y="",title=paste("Forecast", i-1, sep = " "))
+        p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = " "))
       }
       # add each plot into plot list
       fplots[[i]] <<- p  
     })
   
+  return(fplots)
   ## arrange plots in grid
-  # quartz()
-  multiplot(plotlist = fplots, 
-            layout = matrix(1:ncol(fields), nrow=ncol(fields)/4, byrow=TRUE))
+  # multiplot(plotlist = fplots, 
+  #           layout = matrix(1:ncol(fields), nrow=ncol(fields)/4, byrow=TRUE))
   
 }

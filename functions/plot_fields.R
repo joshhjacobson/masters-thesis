@@ -5,15 +5,11 @@ require(RColorBrewer)
 
 ## Function to plot observation and forecast fields together in a grid
 
-plot_fields <- function(fields, x=NULL, y=NULL) {
+plot_fields <- function(fields) {
   
   # fields: observation and ensemble data formatted as cols of a dataframe
   
-  if (is.null(x) | is.null(y)) {
-    x <- y <- seq(-20, 20, 0.2)
-  }
-  
-  source("~/GitHub/random-fields/functions/grid_arrange_shared_legend.R")
+  x <- y <- seq(-20, 20, 0.2)
   
   ## format data as xyz dataframe 
   dat <- expand.grid(x = x, y = y)
@@ -44,23 +40,18 @@ plot_fields <- function(fields, x=NULL, y=NULL) {
               axis.ticks = element_blank())
         
       if (i == 1) {
-        p <- p + labs(x="",y="",title="Observation")
+        p <- p + labs(x="",y="",title="Obs.")
       } else {
-        p <- p + labs(x="",y="",title=paste("Forecast", i-1, sep = " "))
+        p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = " "))
       }
       # add each plot into plot list
       fplots[[i]] <<- p  
     })
   
+  return(fplots)
+  
   ## arrange plots in grid
-  quartz()
-  grid_arrange_shared_legend(fplots, position = "right")
-  
-  
-  ## For comparison
   # quartz()
-  # plot(fields)
-  
-  ## NOTE: custom plots appear to be reflected over x-axis from RF version
+  # grid_arrange_shared_legend(fplots, position = "right")
   
 }

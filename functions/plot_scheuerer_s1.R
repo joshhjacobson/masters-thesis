@@ -8,7 +8,7 @@ library(ggplot2)
 plot_scheuerer_s1 <- function(t, s_dat) {
   
   # t: threshold exceedence level
-  # s_dat: scheuerer_dat table built in transform_scheuerer_dat.R
+  # s_dat: rect table built in process_data.R
   
   df <- filter(s_dat, tau == t)
   p <- ggplot(df, aes(ratio, exceedence, group=factor(s1))) + 
