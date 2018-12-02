@@ -5,26 +5,27 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 
-plot_ranks <- function(s1, t, rank_tab) {
+plot_ranks <- function(s_1, t, rank_tab) {
   
   # s1: range of obs field
   # t: threshold exceedence level
   # rank_tab: rect table built in process_data.R
   
-  s2 <- seq(0.5*s1, 1.5*s1, 0.1*s1)
+  s_2 <- seq(0.5*s1, 1.5*s1, 0.1*s1)
   
   hplots <- list()
-  for (ii in 1:length(s2))
+  for (ii in 1:length(s_2))
     local({
       i <- ii
-      df <- filter(rank_tab, s1==s1 & s2==s2[ii] & tau==t)
+      #errors here due to environment issue?
+      df <- filter(rank_tab, s1==s_1 & s2==s_2[i] & tau==t)
       p <- ggplot(df, aes(rank)) +
         geom_histogram(binwidth = 1, fill="darkblue", color="white", size=0.25) +
         theme(plot.title = element_text(hjust = 0.5)) +
-        labs(x="",y="",title=paste("s2 = ", ii, sep = "")) +
-        scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13)) 
-      
-      hplots[[i]] <<- p  
+        labs(x="",y="",title=paste("s2 = ", s_2[i], sep = "")) +
+        scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13))
+
+      hplots[[i]] <<- p
     })
   
   ## arrange plots in grid
@@ -32,6 +33,6 @@ plot_ranks <- function(s1, t, rank_tab) {
     arrangeGrob(grobs=hplots, ncol=4, 
                 bottom=textGrob("observation rank"), 
                 left=textGrob("count", rot=90),
-                top=paste("s1=", s1, ", tau=", t, sep = ""))
+                top=paste("s1=", s_1, ", tau=", t, sep = ""))
   )
 }

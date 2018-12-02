@@ -41,8 +41,8 @@ grid_arrange_shared_legend <-
       )
     )
     
-    grid.newpage()
-    grid.draw(combined)
+    # grid.newpage()
+    # grid.draw(combined)
     
     # return gtable invisibly
     invisible(combined)

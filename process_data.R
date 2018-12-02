@@ -1,7 +1,7 @@
 
 ## Process and combine exceedence data to use for plotting.
 nam <- "data/exceed_dat_s"
-s_1 <- seq(1,2,0.5)
+s_1 <- seq(1,3.5,0.5)
 tau <- seq(0,4,0.5)
 N <- 5000
 
@@ -83,7 +83,7 @@ source("~/GitHub/random-fields/functions/plot_scheuerer_s1.R")
 source("~/GitHub/random-fields/functions/plot_ranks.R")
 
 ## scheuerer stats
-pdf("~/GitHub/random-fields/images/scheuerer_charts_s1_new.pdf")
+pdf("~/GitHub/random-fields/images/scheuerer_charts_s1.pdf")
 for (t in tau){
   plot_scheuerer_s1(t, ss_tab)
 }

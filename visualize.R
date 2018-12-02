@@ -93,42 +93,53 @@ get_data <- function(samp_size, range, xi=0.8, smooth=c(1.5, 1.5, 1.5), var=c(1,
 
 # Simulate & Plot --------------------------------------------------------------
 
+library(cowplot)
+library(grid)
+library(gridExtra)
 source("~/GitHub/random-fields/functions/plot_fields.R")
 source("~/GitHub/random-fields/functions/plot_binary.R")
+# source("~/GitHub/random-fields/functions/grid_arrange_shared_legend.R")
 
-set.seed(0)
+set.seed(0) 
+## ideally, would set seed in the same way as in sims, 
+## but this won't work with current setup below
 s_1 <- seq(1,4,0.5)
 N <- 10
 
 
 pdf("~/GitHub/random-fields/images/fields.pdf")
-for (ii in 1:1) {
+for (ii in 1:length(s_1)) {
   s_2 <- c(0.5*s_1[ii], 1.5*s_1[ii])
   for (k in 1:N) {
-    f_plots <- list()
-    b_plots <- list()
+    print(paste(k, "range:", s_1[ii], sep=" "))
+    g <- list()
     for (jj in 1:length(s_2)) {
       local({
         ii <- ii
         jj <- jj
-        print(paste("range:", s_1[ii], s_2[jj], sep=" "))
         rng <- c(s_1[ii], sqrt(s_1[ii]*s_2[jj]), s_2[jj])  #geometric mean
         rhored <- rhored_search(xi=0.8, smooth=c(1.5, 1.5, 1.5), rng=rng, var=c(1, 1))
         fields <- build_ensemble(rng=rng, rhored=rhored, n=3)
-        f_plots[[jj]] <<- plot_fields(fields)
-        b_plots[[jj]] <<- plot_binary(fields)
+        if(jj==2) {
+          f_plots <- plot_fields(fields, inc_lab=FALSE)
+        } else {
+          f_plots <- plot_fields(fields)
+        }
+        b_plots <- plot_binary(fields, inc_lab=FALSE)
+        # f <- grid_arrange_shared_legend(f_plots, position = "right")
+        f <- plot_grid(plotlist = f_plots, ncol=4)
+        b <- plot_grid(plotlist = b_plots, ncol=4)
+        g[[jj]] <<- arrangeGrob(f,b, nrow=2, left=textGrob(
+          label=paste("s2=",s_2[jj],sep=""), 
+          gp=gpar(fontsize=12), 
+          rot=90))
       })
     }
-    ## instead maybe setup so that binary and fields are very similar, then use grid arrange
-    ## shared legend for all plots in same list...
-    ## use grob method to build one grob from each list, then plot together for one "sheet"
-    ## arrange plots in grid
-    # grid.arrange(
-    #   arrangeGrob(grobs=hplots, ncol=4, 
-    #               bottom=textGrob("observation rank"), 
-    #               left=textGrob("count", rot=90),
-    #               top=paste("s1=", s1, ", tau=", t, sep = ""))
-    # )
+    grid.arrange(
+      arrangeGrob(grobs=g, nrow=2, top=textGrob(
+        label=paste("s1=",s_1[ii],sep=""), 
+        gp=gpar(fontsize=12)))
+    )
   }
 }
 dev.off()

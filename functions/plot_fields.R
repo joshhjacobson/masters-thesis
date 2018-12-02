@@ -5,7 +5,7 @@ require(RColorBrewer)
 
 ## Function to plot observation and forecast fields together in a grid
 
-plot_fields <- function(fields) {
+plot_fields <- function(fields, inc_lab=TRUE) {
   
   # fields: observation and ensemble data formatted as cols of a dataframe
   
@@ -37,12 +37,18 @@ plot_fields <- function(fields) {
         theme(plot.title = element_text(hjust = 0.5), # center title
               axis.text.x = element_blank(),
               axis.text.y = element_blank(),
-              axis.ticks = element_blank())
+              axis.ticks = element_blank(),
+              text = element_text(size=8),
+              legend.position = "none") # remove when using grid_arrange_shared_legend
         
-      if (i == 1) {
-        p <- p + labs(x="",y="",title="Obs.")
+      if (!inc_lab){
+        p <- p + labs(x="",y="",title="")
       } else {
-        p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = " "))
+        if (i == 1) {
+          p <- p + labs(x="",y="",title="Obs")
+        } else {
+          p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = ""))
+        }
       }
       # add each plot into plot list
       fplots[[i]] <<- p  

@@ -5,10 +5,11 @@ require(ggplot2)
 ## Function to plot observation and forecast fields 
 ## in a grid using tau as a binary mask
 
-plot_binary <- function(fields, tau=1) {
+plot_binary <- function(fields, tau=1, inc_lab=TRUE) {
   
   # fields: observation and ensemble data formatted as cols of a dataframe
   # tau: masking threshold
+  # inc_lab: include label?
   
   x <- y <- seq(-20, 20, 0.2)
   
@@ -35,10 +36,14 @@ plot_binary <- function(fields, tau=1) {
               axis.ticks = element_blank(),
               legend.position="none") 
       
-      if (i == 1) {
-        p <- p + labs(x="",y="",title="Obs.")
+      if (!inc_lab){
+        p <- p + labs(x="",y="",title="")
       } else {
-        p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = " "))
+        if (i == 1) {
+          p <- p + labs(x="",y="",title="Obs")
+        } else {
+          p <- p + labs(x="",y="",title=paste("Ens", i-1, sep = ""))
+        }
       }
       # add each plot into plot list
       fplots[[i]] <<- p  
