@@ -1,7 +1,7 @@
 
 ## Process and combine exceedence data to use for plotting.
 nam <- "data/exceed_dat_s"
-s_1 <- seq(1,3.5,0.5)
+s_1 <- seq(1,4,0.5)
 tau <- seq(0,4,0.5)
 N <- 5000
 
