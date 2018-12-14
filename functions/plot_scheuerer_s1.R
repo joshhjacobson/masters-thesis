@@ -11,10 +11,9 @@ plot_scheuerer_s1 <- function(t, s_dat) {
   # s_dat: rect table built in process_data.R
   
   df <- filter(s_dat, tau == t)
-  p <- ggplot(df, aes(ratio, exceedence, group=factor(s1))) + 
+  p <- ggplot(df, aes(log(ratio), exceedence, group=factor(s1))) + 
     geom_line(aes(color=factor(s1)), size=0.8) +
     scale_colour_brewer(direction=-1, name="s_1") +
-    scale_x_continuous(trans="log") +
     ylim(2.5,4.25) +
     labs(x="log ratio (s2/s1)",y="Scheuerer Statistic",
          title=paste("Deviation from uniformity for tau=", t, sep = "")) +

@@ -1,5 +1,17 @@
 
 ## Process and combine exceedence data to use for plotting.
+
+library(dplyr)
+library(tidyr)
+library(reshape2)
+library(scales)
+library(fitdistrplus)
+library(ggplot2)
+
+
+
+# Collect data ------------------------------------------------------------
+
 nam <- "data/exceed_dat_s"
 s_1 <- seq(1,4,0.5)
 tau <- seq(0,4,0.5)
@@ -54,19 +66,19 @@ for (ii in 1:length(s_1)) {
   rm(arr_dat, rank_cube)
 }
 
-## flatten data
-library(reshape2)
-library(dplyr)
-library(scales)
 
+
+# Reformat data -----------------------------------------------------------
+
+## flatten data
 ss_tab <- melt(ss_cube, value.name='exceedence',
            varnames=c('s1_idx', 's2_idx', 'tau_idx')) %>% 
-      mutate(., 
-             s1=rescale(s1_idx, to=c(1,4)),
-             ratio=rescale(s2_idx, to=c(0.5,1.5)),
-             tau=rescale(tau_idx, to=c(0,4))
-            ) %>%
-      select(., s1, ratio, tau, exceedence)
+          mutate(., 
+                 s1=rescale(s1_idx, to=c(1,4)),
+                 ratio=rescale(s2_idx, to=c(0.5,1.5)),
+                 tau=rescale(tau_idx, to=c(0,4))
+                ) %>%
+          select(., s1, ratio, tau, exceedence)
 
 rank_tab <- melt(rank_arr, value.name='rank',
                  varnames=c('N', 's2_idx', 'tau_idx', 's1_idx')) %>%
@@ -76,9 +88,28 @@ rank_tab <- melt(rank_arr, value.name='rank',
                    tau=rescale(tau_idx, to=c(0,4))
             ) %>%
             select(., s1, s2, tau, N, rank)
-  
 
-## build plots
+## fit beta parameters to rank hists
+fit_tab <- rank_tab %>%
+  mutate(rank = (rank-0.5)/12,
+         ratio=s2/s1) %>%
+  group_by(s1,ratio,tau) %>%
+  summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
+  separate(params, c('a', 'b'), sep=" ") %>%
+  mutate(a=as.numeric(a), b=as.numeric(b))
+
+write.table(rank_tab, file='data/rank_tab.RData')
+write.table(ss_tab, file='data/ss_tab.RData')
+write.table(fit_tab, file='data/fit_tab.RData')
+
+rank_tab <- read.table('data/rank_tab.RData')
+ss_tab <- read.table('data/ss_tab.RData')
+fit_tab <- read.table('data/fit_tab.RData')
+
+
+
+# Visualizations ----------------------------------------------------------
+  
 source("~/GitHub/random-fields/functions/plot_scheuerer_s1.R")
 source("~/GitHub/random-fields/functions/plot_ranks.R")
 
@@ -98,3 +129,26 @@ for (s1 in s_1){
   }
 }
 dev.off()
+
+
+## beta params
+pdf("~/GitHub/random-fields/images/beta_params.pdf")
+for (t in tau){
+  df <- fit_tab %>% filter(tau==t & s1==1 | tau==t & s1==4)
+  param_a <- df %>% dplyr::select(s1, ratio, a) %>% mutate(value = a, param='a')
+  param_b <- df %>% dplyr::select(s1, ratio, b) %>% mutate(value = b, param='b')
+  p <- ggplot(data=NULL, aes(x=log(ratio), y=value, color=param)) +
+    geom_line(data=param_a, size=0.8, aes(linetype=factor(s1))) +
+    geom_line(data=param_b, size=0.8, aes(linetype=factor(s1))) +
+    scale_colour_manual(values=c(a="salmon", b="steelblue")) +
+    ylim(0.5,1.75) +
+    labs(x="log ratio (s2/s1)", y="parameter",
+         title=paste("Beta parameters at tau=", t, sep = "")) +
+    theme_minimal()
+  print(p)
+}
+dev.off()
+
+
+
+

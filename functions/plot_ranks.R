@@ -11,7 +11,7 @@ plot_ranks <- function(s_1, t, rank_tab) {
   # t: threshold exceedence level
   # rank_tab: rect table built in process_data.R
   
-  s_2 <- seq(0.5*s1, 1.5*s1, 0.1*s1)
+  s_2 <- seq(0.5*s_1, 1.5*s_1, 0.1*s_1)
   
   hplots <- list()
   for (ii in 1:length(s_2))
