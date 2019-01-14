@@ -112,6 +112,8 @@ fit_tab <- read.table('data/fit_tab.RData')
   
 source("~/GitHub/random-fields/functions/plot_scheuerer_s1.R")
 source("~/GitHub/random-fields/functions/plot_ranks.R")
+source("~/GitHub/random-fields/functions/plot_ranks_beta.R")
+
 
 ## scheuerer stats
 pdf("~/GitHub/random-fields/images/scheuerer_charts_s1.pdf")
@@ -149,6 +151,16 @@ for (t in tau){
 }
 dev.off()
 
+
+## beta dist
+pdf("~/GitHub/random-fields/images/rank_hists_beta.pdf")
+for (s1 in s_1){
+  for (t in tau){
+    print(paste("s1 =", s1, ", tau =", t))
+    plot_ranks_beta(s1, t, rank_tab, fit_tab)
+  }
+}
+dev.off()
 
 
 
