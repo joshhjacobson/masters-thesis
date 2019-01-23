@@ -98,13 +98,35 @@ fit_tab <- rank_tab %>%
   separate(params, c('a', 'b'), sep=" ") %>%
   mutate(a=as.numeric(a), b=as.numeric(b))
 
+
+## fit beta parameters to rank hists after spreading
+set.seed(10)
+spread_rank <- function(r) {
+  return(runif(1, r-1/24, r+1/24))
+}
+
+cont_fit_tab <- rank_tab %>%
+  mutate(rank = (rank-0.5)/12,
+         ratio=s2/s1) %>%
+  mutate(rank = sapply(rank, spread_rank)) %>%
+  group_by(s1,ratio,tau) %>%
+  summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
+  separate(params, c('a', 'b'), sep=" ") %>%
+  mutate(a=as.numeric(a), b=as.numeric(b))
+
+
+
+# Save/Load ---------------------------------------------------------------
+
 write.table(rank_tab, file='data/rank_tab.RData')
 write.table(ss_tab, file='data/ss_tab.RData')
 write.table(fit_tab, file='data/fit_tab.RData')
+write.table(cont_fit_tab, file='data/cont_fit_tab.RData')
 
 rank_tab <- read.table('data/rank_tab.RData')
 ss_tab <- read.table('data/ss_tab.RData')
 fit_tab <- read.table('data/fit_tab.RData')
+cont_fit_tab <- read.table('data/cont_fit_tab.RData')
 
 
 
@@ -134,9 +156,9 @@ dev.off()
 
 
 ## beta params
-pdf("~/GitHub/random-fields/images/beta_params.pdf")
+pdf("~/GitHub/random-fields/images/beta_params_cont.pdf")
 for (t in tau){
-  df <- fit_tab %>% filter(tau==t & s1==1 | tau==t & s1==4)
+  df <- cont_fit_tab %>% filter(tau==t & s1==1 | tau==t & s1==4)
   param_a <- df %>% dplyr::select(s1, ratio, a) %>% mutate(value = a, param='a')
   param_b <- df %>% dplyr::select(s1, ratio, b) %>% mutate(value = b, param='b')
   p <- ggplot(data=NULL, aes(x=log(ratio), y=value, color=param)) +
@@ -153,11 +175,11 @@ dev.off()
 
 
 ## beta dist
-pdf("~/GitHub/random-fields/images/rank_hists_beta.pdf")
+pdf("~/GitHub/random-fields/images/rank_hists_cont_beta.pdf")
 for (s1 in s_1){
   for (t in tau){
     print(paste("s1 =", s1, ", tau =", t))
-    plot_ranks_beta(s1, t, rank_tab, fit_tab)
+    plot_ranks_beta(s1, t, rank_tab, cont_fit_tab)
   }
 }
 dev.off()
