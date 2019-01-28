@@ -17,10 +17,21 @@ s_1 <- seq(1,4,0.5)
 tau <- seq(0,4,0.5)
 N <- 5000
 
+## Track number of ranks randomized at each treshold
+rand_arr <- array(0, dim = c(7,11,9)) # (s1 x s2 x tau)
+
 ## Compute rank of an observation's mean in the distribution
 ## of the ensemble means
-rank_obs <- function(means) {
+rank_obs <- function(means, idx) {
   # means: observation and ensemble means with obs listed first
+  # idx: current idx of rand_arr
+  # glob_arr (global): 3d array for counting randomized ranks
+  
+  if(sum(means) < 0.05) { 
+    # mark as random
+    rand_arr[idx[1],idx[2],idx[3]] <<-  rand_arr[idx[1],idx[2],idx[3]] + 1
+  }
+  
   r <- rank(means, ties.method = "random")[[1]] 
   return(r)
 }
@@ -49,7 +60,7 @@ for (ii in 1:length(s_1)) {
     ## loop over tau
     for (t in 1:length(tau)) {
       ## rank each realization
-      rank_cube[,jj,t] <- apply(arr_dat[,,t,jj], 1, rank_obs)
+      rank_cube[,jj,t] <- apply(arr_dat[,,t,jj], 1, rank_obs, idx=c(ii,jj,t))
     }
   }
   
@@ -78,7 +89,7 @@ ss_tab <- melt(ss_cube, value.name='exceedence',
                  ratio=rescale(s2_idx, to=c(0.5,1.5)),
                  tau=rescale(tau_idx, to=c(0,4))
                 ) %>%
-          select(., s1, ratio, tau, exceedence)
+          dplyr::select(., s1, ratio, tau, exceedence)
 
 rank_tab <- melt(rank_arr, value.name='rank',
                  varnames=c('N', 's2_idx', 'tau_idx', 's1_idx')) %>%
@@ -87,7 +98,17 @@ rank_tab <- melt(rank_arr, value.name='rank',
                    s2=rescale(s2_idx, to=c(0.5,1.5))*s1,
                    tau=rescale(tau_idx, to=c(0,4))
             ) %>%
-            select(., s1, s2, tau, N, rank)
+            dplyr::select(., s1, s2, tau, N, rank)
+
+rand_count_tab <- melt(rand_arr, value.name='count',
+                       varnames=c('s1_idx', 's2_idx', 'tau_idx')) %>%
+                  mutate(., 
+                         s1=rescale(s1_idx, to=c(1,4)),
+                         s2=rescale(s2_idx, to=c(0.5,1.5))*s1,
+                         tau=rescale(tau_idx, to=c(0,4))
+                  ) %>%
+                  dplyr::select(., s1, s2, tau, count) %>%
+                  mutate(., r_percent=(count/N)*100)
 
 ## fit beta parameters to rank hists
 fit_tab <- rank_tab %>%
@@ -119,11 +140,13 @@ cont_fit_tab <- rank_tab %>%
 # Save/Load ---------------------------------------------------------------
 
 write.table(rank_tab, file='data/rank_tab.RData')
+write.table(rand_count_tab, file='data/rand_count_tab.RData')
 write.table(ss_tab, file='data/ss_tab.RData')
 write.table(fit_tab, file='data/fit_tab.RData')
 write.table(cont_fit_tab, file='data/cont_fit_tab.RData')
 
 rank_tab <- read.table('data/rank_tab.RData')
+rand_count_tab <- read.table('data/rand_count_tab.RData')
 ss_tab <- read.table('data/ss_tab.RData')
 fit_tab <- read.table('data/fit_tab.RData')
 cont_fit_tab <- read.table('data/cont_fit_tab.RData')
