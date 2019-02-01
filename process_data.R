@@ -27,9 +27,10 @@ rank_obs <- function(means, idx) {
   # idx: current idx of rand_arr
   # glob_arr (global): 3d array for counting randomized ranks
   
-  if(sum(means) < 0.05) { 
+  if(sum(means) == 0) { 
     # mark as random
     rand_arr[idx[1],idx[2],idx[3]] <<-  rand_arr[idx[1],idx[2],idx[3]] + 1
+    return(NA)
   }
   
   r <- rank(means, ties.method = "random")[[1]] 
@@ -127,6 +128,7 @@ spread_rank <- function(r) {
 }
 
 cont_fit_tab <- rank_tab %>%
+  drop_na() %>%
   mutate(rank = (rank-0.5)/12,
          ratio=s2/s1) %>%
   mutate(rank = sapply(rank, spread_rank)) %>%
@@ -172,14 +174,31 @@ pdf("~/GitHub/random-fields/images/rank_hists.pdf")
 for (s1 in s_1){
   for (t in tau){
     print(paste("s1 =", s1, ", tau =", t))
-    plot_ranks(s1, t, rank_tab)
+    plot_ranks(s1, t, rank_tab, rand_count_tab)
   }
 }
 dev.off()
 
 
 ## beta params
-pdf("~/GitHub/random-fields/images/beta_params_cont.pdf")
+pdf("~/GitHub/random-fields/images/beta_params_cont_12.pdf")
+for (t in tau){
+  df <- cont_fit_tab %>% filter(tau==t & s1==1 | tau==t & s1==2)
+  param_a <- df %>% dplyr::select(s1, ratio, a) %>% mutate(value = a, param='a')
+  param_b <- df %>% dplyr::select(s1, ratio, b) %>% mutate(value = b, param='b')
+  p <- ggplot(data=NULL, aes(x=log(ratio), y=value, color=param)) +
+    geom_line(data=param_a, size=0.8, aes(linetype=factor(s1))) +
+    geom_line(data=param_b, size=0.8, aes(linetype=factor(s1))) +
+    scale_colour_manual(values=c(a="salmon", b="steelblue")) +
+    ylim(0.5,1.75) +
+    labs(x="log ratio (s2/s1)", y="parameter",
+         title=paste("Beta parameters at tau=", t, sep = "")) +
+    theme_minimal()
+  print(p)
+}
+dev.off()
+
+pdf("~/GitHub/random-fields/images/beta_params_cont_14.pdf")
 for (t in tau){
   df <- cont_fit_tab %>% filter(tau==t & s1==1 | tau==t & s1==4)
   param_a <- df %>% dplyr::select(s1, ratio, a) %>% mutate(value = a, param='a')
@@ -202,7 +221,7 @@ pdf("~/GitHub/random-fields/images/rank_hists_cont_beta.pdf")
 for (s1 in s_1){
   for (t in tau){
     print(paste("s1 =", s1, ", tau =", t))
-    plot_ranks_beta(s1, t, rank_tab, cont_fit_tab)
+    plot_ranks_beta(s1, t, rank_tab, cont_fit_tab, rand_count_tab)
   }
 }
 dev.off()

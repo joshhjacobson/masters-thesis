@@ -5,7 +5,7 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 
-plot_ranks <- function(s_1, t, rank_tab) {
+plot_ranks <- function(s_1, t, rank_tab, rand_count_tab) {
   
   # s1: range of obs field
   # t: threshold exceedence level
@@ -19,10 +19,11 @@ plot_ranks <- function(s_1, t, rank_tab) {
       i <- ii
       #errors here due to environment issue?
       df <- filter(rank_tab, s1==s_1 & s2==s_2[i] & tau==t)
+      rp <- filter(rand_count_tab, s1==s_1 & s2==s_2[i] & tau==t)
       p <- ggplot(df, aes(rank)) +
         geom_histogram(binwidth = 1, fill="darkblue", color="white", size=0.25) +
-        theme(plot.title = element_text(hjust = 0.5)) +
-        labs(x="",y="",title=paste("s2 = ", s_2[i], sep = "")) +
+        theme(plot.title = element_text(hjust = 0.5, size=10)) +
+        labs(x="",y="",title=paste("s2 = ", s_2[i], ", ", rp['r_percent'], "%", sep = "")) +
         scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13))
 
       hplots[[i]] <<- p
