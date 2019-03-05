@@ -1,5 +1,5 @@
 
-## Analyze real data
+## Produce FTE histograms for upscaled GEFS reanalysis data
 
 library(ncdf4)
 library(lubridate)
@@ -7,7 +7,7 @@ library(dplyr)
 library(reshape2)
 library(ggplot2)
 
-ncin <- nc_open('./data/real/refcstv2_precip_ccpav3_subset_066_to_072.nc')
+ncin <- nc_open('./data/gefs/original/refcstv2_precip_ccpav3_subset_066_to_072.nc')
 # print(ncin)
 
 apcp_fcst_ens <- ncvar_get(ncin, 'apcp_fcst_ens')
@@ -39,7 +39,7 @@ gather_df <- function(D, A, E) {
   dim(A) <- NULL
   E <- E[,,,D]
   dim(E) <- c(nrow(E)*ncol(E), 11) ## is this correct?
-  # E <- matrix(E, nrow(E)*ncol(E), 11, byrow=FALSE)
+  E <- matrix(E, nrow(E)*ncol(E), 11, byrow=FALSE) ## double check by looking at random lat lon cord
   return(data.frame(A, E))
 }
 
@@ -51,7 +51,7 @@ exceedence_ranks <- function(fields_df, tau) {
   ranks <- array(dim= length(tau))
   for (i in 1:length(tau)) {
     m <- array(colMeans(fields_df > tau[i]))
-    ranks[i] <- rank(m, ties.method = "random")[[1]]
+    ranks[i] <- rank(m, ties.method = "random")[1]
   }
   return( ranks )
 }
@@ -59,7 +59,7 @@ exceedence_ranks <- function(fields_df, tau) {
 
 ## Loop over days and compute ranks at different thresholds 
 tau <- c(5,10,20)
-n_days <- length(a_eff[1,1,])
+n_days <- length(a_trim[1,1,])
 ranks_arr <- array(dim = c(n_days, length(tau)))
 for (d in 1:n_days){
   fields_df <- gather_df(d, a_trim, e_trim)
@@ -71,7 +71,8 @@ for (d in 1:n_days){
 ranks_df <- data.frame(ranks_arr)
 names(ranks_df) <- paste('tau',tau,sep='')
 
-pdf("~/GitHub/random-fields/images/raw_fcst_upsc_hists.pdf")
+pdf("~/GitHub/random-fields/images/gefs_upsc_hists.pdf",
+    width = 10, height = 8)
 ranks_df %>% 
   mutate(date = seq.Date(as.Date('2000-01-01'), by='day', length.out=nrow(ranks_df)),
          month = month(date)) %>%
@@ -80,10 +81,8 @@ ranks_df %>%
   ggplot(aes(x=rank)) +
     geom_histogram(binwidth = 1, fill="steelblue", color="white", size=0.25) +
     scale_x_continuous(breaks=seq(0,12,4)) +
-    facet_grid(tau ~ month)
+    facet_grid(tau ~ month) +
+    labs(title='Method 1: Upscaled Analyes')
 
 dev.off()
-  
-
-## Due to some dimensionality uncertainty, I don't know if the produced histograms are correct
 
