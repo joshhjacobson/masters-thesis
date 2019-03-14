@@ -1,6 +1,5 @@
 
 ## Produce FTE histograms for calibrated GEFS reanalysis data
-## Question: how are the forecasts downscaled if they are coarse-scale? Are they downscaled?
 
 library(ncdf4)
 library(lubridate)
@@ -25,7 +24,7 @@ lon_idx <- which(lons_fcst[,1] >= -91 &  lons_fcst[,1] <= -81)
 lat_idx <- which(lats_fcst[1,] >= 30 &  lats_fcst[1,] <= 40)
 
 
-## create an array to store all each analysis-ensemble pair dim(lon, lat, time, obs/ens_n)
+## create an array to store each analysis-ensemble pair dim(lon, lat, time, obs/ens_n)
 field_dat <- array(dim = c(length(lon_idx), length(lat_idx), length(init_anal), 12))
 ## trim to same range as ensembles
 field_dat[,,,1] <- anal_upsc[lon_idx, lat_idx, ]
@@ -43,7 +42,7 @@ lapply(files, function(f) {
   fcsts <- ncvar_get(ncin, 'forecasts')
   
   j <- i+dim(fcsts)[3]-1
-  field_dat[,, i:j, 2:12] <<- fcsts[lon_idx, lat_idx, , ]
+  field_dat[,, i:j, 2:12] <<- fcsts[lon_idx, lat_idx, , ] 
 
   i <<- i + dim(fcsts)[3]
   nc_close(ncin)
@@ -53,6 +52,11 @@ rm(i, files, lon_idx, lat_idx)
 
 
 # Threshold exceedence ranking --------------------------------------------
+
+m <- c(1, 4, 7, 10) # Jan, Apr, Jul, Oct
+dates <- seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day')
+date_idx <- (month(dates) %in% m)
+field_dat <- field_dat[,, date_idx,] 
 
 ## compute the mean threshold exceedence of fields_df at array of thresholds 
 ## and return analysis ranks
@@ -80,7 +84,7 @@ names(ranks_df) <- paste('tau',tau,sep='')
 pdf("~/GitHub/random-fields/images/gefs_calibrated_hists.pdf",
     width = 10, height = 8)
 ranks_df %>% 
-  mutate(date = seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day'),
+  mutate(date = dates[date_idx],
          month = month(date)) %>%
   select(-date) %>%
   melt(id.vars='month', variable.name='tau', value.name='rank') %>%
@@ -88,7 +92,7 @@ ranks_df %>%
   geom_histogram(binwidth = 1, fill="steelblue", color="white", size=0.25) +
   scale_x_continuous(breaks=seq(0,12,4)) +
   facet_grid(tau ~ month) +
-  labs(title='Method 3: GEFS Calibrated Forecasts')
+  labs(title='Method 2: GEFS Calibrated Forecasts')
 
 dev.off()
 

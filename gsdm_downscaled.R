@@ -14,14 +14,22 @@ library(ggplot2)
 
 ## grab analyses and time data
 ncin <- nc_open('./data/gefs/original/refcstv2_precip_ccpav3_subset_066_to_072.nc')
-obs <- ncvar_get(ncin, 'apcp_anal')
+apcp_anal <- ncvar_get(ncin, 'apcp_anal')
+
+## subset data to same region
+lons_anal <- ncvar_get(ncin, 'lons_anal')
+lats_anal <- ncvar_get(ncin, 'lats_anal')
+lon_idx <- which(lons_anal[,1] >= -91 &  lons_anal[,1] <= -81)
+lat_idx <- which(lats_anal[1,] >= 30 &  lats_anal[1,] <= 40)
+apcp_anal <- apcp_anal[lon_idx, lat_idx, ]
+rm(lons_anal, lats_anal, lon_idx, lat_idx)
 
 ## create an array to store all each analysis-ensemble pair dim(lon, lat, time, obs/ens_n)
-field_dat <- array(dim = c(dim(obs), 12))
-field_dat[,,,1] <- obs
+field_dat <- array(dim = c(dim(apcp_anal), 12))
+field_dat[,,,1] <- apcp_anal
 
 nc_close(ncin)
-rm(ncin, obs)
+rm(ncin, apcp_anal)
 
 
 # Ensembles (downscaled) --------------------------------------------------
@@ -37,6 +45,11 @@ files <- list.files(path='./data/gsdm', pattern='*.nc', full.names=TRUE)
 lapply(seq_along(files), function(i) {
   ncin <- nc_open(files[i])
   fcsts <- ncvar_get(ncin, 'downscaled')
+  
+  lons_fcst <- ncvar_get(ncin, 'Longitude')
+  lats_fcst <- ncvar_get(ncin, 'Latitude')
+  lon_idx <- which(lons_fcst[,1] >= -91 &  lons_fcst[,1] <= -81)
+  lat_idx <- which(lats_fcst[1,] >= 30 &  lats_fcst[1,] <= 40)
   
   # april
   if(m[i]==4){
@@ -57,7 +70,7 @@ lapply(seq_along(files), function(i) {
     jj <- j+1
     # print(dim(field_dat[,, date_idx, jj]))
     # print(dim(fcsts[,,j,]))
-    field_dat[,, date_idx, jj] <<- fcsts[,,j,]
+    field_dat[,, date_idx, jj] <<- fcsts[lon_idx, lat_idx, j,]
   }
   
   nc_close(ncin)
@@ -66,7 +79,8 @@ lapply(seq_along(files), function(i) {
 rm(files)
 
 date_idx <- (month(dates) %in% m)
-field_dat <- field_dat[,, date_idx,]
+field_dat <- field_dat[,, date_idx,] 
+save(field_dat, file="gsdm_downscaled_fields.RData")
 
 
 # Threshold exceedence ranking --------------------------------------------
