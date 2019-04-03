@@ -57,6 +57,7 @@ m <- c(1, 4, 7, 10) # Jan, Apr, Jul, Oct
 dates <- seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day')
 date_idx <- (month(dates) %in% m)
 field_dat <- field_dat[,, date_idx,] 
+save(field_dat, file="gefs_calibrated_fields.RData")
 
 ## compute the mean threshold exceedence of fields_df at array of thresholds 
 ## and return analysis ranks
