@@ -9,10 +9,7 @@ library(RColorBrewer)
 
 
 
-# Fig 1 -------------------------------------------------------------------
-
-# motivating figure with a verification field and three forecast fields, 
-# one with correct spatial structure, one with close structure, and one with mediocre structure
+# Setup -------------------------------------------------------------------
 
 ## Functions to numerically determine rho value that produces desired xi
 rho_root <- function(rho, xi, smooth, rng, var) {
@@ -30,8 +27,15 @@ rhored_search <- function(xi, smooth, rng, var) {
   }
 }
 
+
 ## grid
 x <- y <- seq(-20, 20, 0.2)
+
+
+# Fig 1 -------------------------------------------------------------------
+
+# motivating figure with a verification field and three forecast fields, 
+# one with correct spatial structure, one with close structure, and one with mediocre structure
 
 ## model params
 a1 <- 2
@@ -73,7 +77,7 @@ dat <- expand.grid(x = x, y = y)
 dat["z"] <- fields[,1]
 
 
-pdf('vis_discrimination_example.pdf', width=12, height=4)
+# pdf('vis_discrimination_example.pdf', width=12, height=4)
 par(mfrow=c(1,4))
 for(i in 1:ncol(fields)){
   dat$z <- fields[,i]
@@ -87,8 +91,7 @@ for(i in 1:ncol(fields)){
                main=paste("Forecast", i-1, sep=" "))
   }
 }
-dev.off()
-
+# dev.off()
 
 
 
@@ -121,7 +124,130 @@ for (i in 1:ncol(fields))
 
 
 
-pdf('figure1.pdf', width=12, height=6)
+# pdf('figure1.pdf', width=12, height=6)
 # ggarrange(plotlist=fplots, common.legend=TRUE, legend='none')
+# grid.arrange(arrangeGrob(grobs=fplots, nrow=1))
+# dev.off()
+
+
+
+# Figure 2 ----------------------------------------------------------------
+rm(list=ls())
+
+## A: a2 = 0.5*a1
+## binary verification and three ensemble members with FTE histogram 
+
+
+## Simulate the verification and ensemble
+## model params
+a1 <- 2
+a2 <- 3
+xi <- 0.8; smooth <- c(1.5, 1.5, 1.5); var <- c(1, 1)
+
+rng <- c(a1, sqrt(a1*a2), a2)
+rho <- rhored_search(xi, smooth, rng, var)
+
+# model
+set.seed(0)
+model_biwm <- RMbiwm(nu=smooth, s=rng, cdiag=var, rhored=rho)
+sim <- RFsimulate(model_biwm, x, y)
+
+## ensemble perturbation
+model_whittle <- RMwhittle(nu=smooth[3], notinvnu=TRUE,
+                           scale=rng[3], var=var[2])
+omega <- RFsimulate(model_whittle, x, y, n=3)
+omega <- as.matrix(data.frame(omega))
+
+ensemble_mean <- replicate(3, sim$variable2)
+ensemble <- xi*ensemble_mean + sqrt(1-xi^2)*omega
+
+fields <- data.frame(sim$variable1, ensemble)
+
+
+## Visualize
+dat <- expand.grid(x = x, y = y)
+dat["z"] <- fields[,1]
+
+fplots <- list()
+
+## binary fields
+for (i in 1:ncol(fields))
+  local({
+    i <- i
+    # update data being plotted
+    dat$z <- fields[,i]
+    p <- ggplot(dat, aes(x, y)) +
+      geom_raster(aes(fill = z > 0)) +
+      scale_fill_manual(values = c("TRUE" = "#08306B", "FALSE" = "#F7FBFF")) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust=0.5, size=12), # center title
+            # axis.text.x = element_blank(),
+            # axis.text.y = element_blank(),
+            # axis.ticks = element_blank(),
+            panel.grid = element_blank(),
+            panel.border = element_blank(),
+            legend.position="none") 
+    
+    if (i == 1) {
+      p <- p + labs(x="",y="",title="Verification")
+    } else {
+      p <- p + labs(x="",y="",title=paste("Ens. Member", i-1))
+    }
+    fplots[[i]] <<- p  
+  })
+
+## rank hist (with full ties dropped)
+# rank_tab <- read.table('data/rank_tab.RData')
+df <- rank_tab %>% filter(s1==a1, s2==a2, tau==0)
+p <- ggplot(df, aes(rank)) +
+  geom_histogram(binwidth = 1, fill="gray10", color="white", size=0.2) +
+  scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13), expand=c(0.01,0.01)) +
+  scale_y_continuous(expand = c(0.01,50)) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size=12),
+        axis.text = element_text(size=10),
+        panel.grid = element_blank()) +
+  labs(x="Rank",y="",title="FTE histogram")
+
+fplots[[5]] <- p  
+
+pdf('ver_ens_hist_23.pdf', width=12, height=4)
 grid.arrange(arrangeGrob(grobs=fplots, nrow=1))
 dev.off()
+
+
+
+
+# Figure 3 ----------------------------------------------------------------
+rm(list=ls())
+
+## Beta param plot for a1 = 2
+cont_fit_tab <- read.table('data/cont_fit_tab.RData')
+
+a1 = 2
+
+df <- cont_fit_tab %>% filter(tau==0, s1==a1)
+param_a <- df %>% dplyr::select(s1, ratio, a) %>% mutate(value = a, param='a')
+param_b <- df %>% dplyr::select(s1, ratio, b) %>% mutate(value = b, param='b')
+
+pdf('beta_params.pdf', width=6, height=6)
+ggplot(data=NULL, aes(x=log(ratio), y=value, color=param)) +
+  geom_line(data=param_a, size=0.8) +
+  geom_line(data=param_b, size=0.8) +
+  scale_colour_manual(values=c(a="salmon", b="steelblue"), 
+                      name="Param.", labels=c('shape1', 'shape2')) +
+  labs(x="log ratio (a2/a1)", y="shape parameter") +
+  theme_bw() +
+  theme(strip.text.x = element_blank(),
+        strip.background = element_rect(colour="white", fill="white"),
+        legend.position=c(0.85,0.15)
+  )
+dev.off()
+  
+
+
+
+
+
+
+#
