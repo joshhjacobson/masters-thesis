@@ -13,7 +13,8 @@ compute_xi <- function(range, rho) {
   ## model
   model_biwm <- RandomFields::RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
   cov_mat <- RandomFields::RFcov(model_biwm, x=0)
-  return(round(cov_mat[1,1,2], 3))
+  # return(round(cov_mat[1,1,2], 3))
+  return(cov_mat)
 }
 
 ## Comupte xi values at all ranges with biwm model

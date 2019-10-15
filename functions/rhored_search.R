@@ -4,6 +4,8 @@
 ## what value for rho yeilds RFcov-xi=0
 ## NOTE: set tolerance in uniroot?
 
+## NOTE: what really want here is the rhored that produces rho=xi (i.e., choose the proxy rhored so that the empirical rho matches xi)
+
 
 rho_root <- function(rho, xi, smooth, rng, var) {
   model <- RMbiwm(nu = smooth, s = rng, cdiag = var, rhored = rho)
