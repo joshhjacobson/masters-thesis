@@ -55,36 +55,38 @@ demo_ens_sim <- function(a1, a2) {
 
 
 ## data for histogram
-rank_tab <- read.table('data/rank_tab.RData')
+rank_tab <- read.table('../data/rank_tab.RData')
+rank_tab <- rank_tab %>% mutate(rank = (rank-0.5)/12)
 
+## range parameters and grid
 a1 <- 2
 a2 <- c(1, 2, 3)
+tau <- 0
 x <- y <- seq(-20, 20, 0.2)
-
 
 
 # Make figure -------------------------------------------------------------
 
 pl <- list()
-## binary fields
 for (i in seq(1,11,5)){
   fields <- demo_ens_sim(a1, a2[round(i/5)+1])
   dat <- expand.grid(x = x, y = y)
   dat["z"] <- fields[,1]
   
+  ## binary fields
   for (j in 1:ncol(fields))
     local({
       j <- j
       # update data being plotted
       dat$z <- fields[,j]
       p <- ggplot(dat, aes(x, y)) +
-        geom_raster(aes(fill = z > 0)) +
+        geom_raster(aes(fill = z > tau)) +
         scale_fill_manual(values = c("TRUE" = "#08306B", "FALSE" = "#F7FBFF")) +
-        theme_bw() +
+        theme_void() +
         theme(plot.title = element_blank(),
-              axis.text = element_text(size=6, color="black"),
-              panel.grid = element_blank(),
-              panel.border = element_blank(),
+              # axis.text = element_blank(),
+              # panel.grid = element_blank(),
+              # panel.border = element_blank(),
               aspect.ratio = 1/1,
               legend.position="none") +
         labs(x=NULL, y=NULL)
@@ -95,12 +97,13 @@ for (i in seq(1,11,5)){
   df <- rank_tab %>% filter(s1==a1, s2==a2[round(i/5)+1], tau==0)
   
   p <- ggplot(df, aes(rank)) +
-    geom_histogram(binwidth = 1, fill="gray10", color="white", size=0.1) +
-    scale_x_continuous(breaks=seq(0,12,2), limits=c(0,13), expand=c(0.01,0.01)) +
-    theme_classic() +
+    geom_histogram(aes(y=..density..), bins=12, fill="gray10", color="white") +
+    # scale_x_continuous(breaks=seq(0,1,1/13), limits=c(0,1), expand=c(0.01,0.01)) +
+    geom_hline(yintercept = 1, color="blue", linetype="dashed") + 
+    theme_void() +
     theme(plot.title = element_blank(),
-          axis.text = element_text(size=6, color="black"),
-          panel.grid = element_blank(),
+          # axis.text = element_text(size=6, color="black"),
+          # panel.grid = element_blank(),
           aspect.ratio = 1/1) +
     labs(x=NULL, y=NULL)
   
@@ -109,15 +112,21 @@ for (i in seq(1,11,5)){
 
 
 ## create row labels
-row_labs <- c("a2 = 0.5*a1", "a2 = a1", "a2 = 1.5*a1")
+# row_labs <- c("a2 = 0.5*a1", "a2 = a1", "a2 = 1.5*a1")
+row_labs <- c("A", "B", "C")
 col_labs <- c("", "Verification", "Member 1", "Member 2", "Member 3", "FTE Histogram")
 
 ## figure matrix
-grd <- rbind(tableGrob(t(col_labs), theme = ttheme_minimal()), 
-                 cbind(tableGrob(row_labs, theme = ttheme_minimal(core=list(fg_params=list(rot=90)))), 
-                       arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
+# grd <- rbind(tableGrob(t(col_labs), theme = ttheme_minimal()), 
+#                  cbind(tableGrob(row_labs, theme = ttheme_minimal(core=list(fg_params=list(rot=90)))), 
+#                        arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
+tt <- ttheme_minimal(core = list(fg_params=list(fontface="bold")))
+grd <- rbind(tableGrob(t(col_labs), theme = tt), 
+             cbind(tableGrob(row_labs, theme = tt), 
+                   arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
 
-png('ver_ens_hist.png', units='in', width=8, height=5, res=400, pointsize=9)
+
+png('ver_ens_fte_1.png', units='in', width=8, height=5, res=400, pointsize=9)
 grid.draw(grd)
 dev.off()
 
