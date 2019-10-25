@@ -85,6 +85,8 @@ save(field_dat, file="gsdm_downscaled_fields.RData")
 
 # Threshold exceedence ranking --------------------------------------------
 
+load("./data/gsdm/gsdm_downscaled_fields.RData")
+
 ## compute the mean threshold exceedence of fields_df at array of thresholds
 ## and return analysis ranks
 exceed_ranks <- function(dat_arr, tau){
