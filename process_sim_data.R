@@ -27,7 +27,7 @@ rank_obs <- function(means, idx) {
   # idx: current idx of rand_arr
   # glob_arr (global): 3d array for counting randomized ranks
   
-  if(sum(means) == 0) { 
+  if(length(unique(means)) == 1) { 
     # mark as random
     rand_arr[idx[1],idx[2],idx[3]] <<-  rand_arr[idx[1],idx[2],idx[3]] + 1
     return(NA)
@@ -37,14 +37,7 @@ rank_obs <- function(means, idx) {
   return(r)
 }
 
-## Compute Scheuerer statistic for a given column of rank data
-scheuerer_stat <- function(col) {
-  s_stat <- sum(sapply(col, function(rank) abs(rank-6.5))) / length(col)
-}
 
-
-## init scheuerer cube and ranks array
-ss_cube <- array(dim = c(7,11,9))
 rank_arr <- array(dim = c(N, 11, 9, 7))
 
 
@@ -67,14 +60,6 @@ for (ii in 1:length(s_1)) {
   
   ## fill in ranks array
   rank_arr[,,,ii] <- rank_cube
-  
-  ## fill in scheuerer table (slice of ss cube)
-  ## loop over tau
-  for (t in 1:length(tau)) {
-    ## compute ss for each column in s_2
-    ss_cube[ii,,t] <- apply(rank_cube[,,t], 2, scheuerer_stat)
-  }
- 
   rm(arr_dat, rank_cube)
 }
 
@@ -83,15 +68,6 @@ for (ii in 1:length(s_1)) {
 # Reformat data -----------------------------------------------------------
 
 ## flatten data
-ss_tab <- melt(ss_cube, value.name='exceedence',
-           varnames=c('s1_idx', 's2_idx', 'tau_idx')) %>% 
-          mutate(., 
-                 s1=rescale(s1_idx, to=c(1,4)),
-                 ratio=rescale(s2_idx, to=c(0.5,1.5)),
-                 tau=rescale(tau_idx, to=c(0,4))
-                ) %>%
-          dplyr::select(., s1, ratio, tau, exceedence)
-
 rank_tab <- melt(rank_arr, value.name='rank',
                  varnames=c('N', 's2_idx', 'tau_idx', 's1_idx')) %>%
             mutate(., 
@@ -143,13 +119,11 @@ cont_fit_tab <- rank_tab %>%
 
 write.table(rank_tab, file='data/rank_tab.RData')
 write.table(rand_count_tab, file='data/rand_count_tab.RData')
-write.table(ss_tab, file='data/ss_tab.RData')
 write.table(fit_tab, file='data/fit_tab.RData')
 write.table(cont_fit_tab, file='data/cont_fit_tab.RData')
 
 rank_tab <- read.table('data/rank_tab.RData')
 rand_count_tab <- read.table('data/rand_count_tab.RData')
-ss_tab <- read.table('data/ss_tab.RData')
 fit_tab <- read.table('data/fit_tab.RData')
 cont_fit_tab <- read.table('data/cont_fit_tab.RData')
 

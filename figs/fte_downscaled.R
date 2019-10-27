@@ -22,7 +22,7 @@ exceed_ranks <- function(dat_arr, tau){
   ranks <- array(dim = length(tau))
   for (i in 1:length(tau)) {
     m <- apply(dat_arr, 3, function(field) mean(as.vector(field) > tau[i]))
-    if(length(unique(m)) != 0) { 
+    if(length(unique(m)) != 1) { 
       ranks[i] <- rank(m, ties.method = "random")[1]
     } else {
       # exclude exact ties
@@ -58,6 +58,7 @@ down_fit_tab <- ranks_df %>%
   melt(id.vars='month', variable.name='tau', value.name='rank') %>%
   mutate(rank = sapply((rank-0.5)/12, spread_rank)) %>%
   group_by(tau, month) %>%
+  drop_na() %>%
   summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
   separate(params, c('a', 'b'), sep=" ") %>%
   mutate(a=round(as.numeric(a), 3), b=round(as.numeric(b),3)) %>%
