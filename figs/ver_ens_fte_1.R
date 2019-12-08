@@ -53,6 +53,9 @@ demo_ens_sim <- function(a1, a2) {
   return(fields)
 } 
 
+disagg_rank <- function(r) {
+  return(runif(1, r-1/24, r+1/24))
+}
 
 ## data for histogram
 rank_tab <- read.table('../data/rank_tab.RData')
@@ -84,9 +87,6 @@ for (i in seq(1,11,5)){
         scale_fill_manual(values = c("TRUE" = "#08306B", "FALSE" = "#F7FBFF")) +
         theme_void() +
         theme(plot.title = element_blank(),
-              # axis.text = element_blank(),
-              # panel.grid = element_blank(),
-              # panel.border = element_blank(),
               aspect.ratio = 1/1,
               legend.position="none") +
         labs(x=NULL, y=NULL)
@@ -94,32 +94,43 @@ for (i in seq(1,11,5)){
     })
   
   ## fte ranks for given range pair
-  df <- rank_tab %>% filter(s1==a1, s2==a2[round(i/5)+1], tau==0)
+  j <- round(i/5)+1
+  df <- rank_tab %>% filter(s1==a1, s2==a2[j], tau==0)
+  
+  params <- df %>%
+    mutate(rank = sapply(rank, disagg_rank)) %>%
+    summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
+    separate(params, c('a', 'b'), sep=" ") %>%
+    mutate(a=round(as.numeric(a), 3), b=round(as.numeric(b),3)) %>%
+    unite(params, a:b, sep = ", ")
   
   p <- ggplot(df, aes(rank)) +
-    geom_histogram(aes(y=..density..), bins=12, fill="gray10", color="white") +
-    # scale_x_continuous(breaks=seq(0,1,1/13), limits=c(0,1), expand=c(0.01,0.01)) +
-    geom_hline(yintercept = 1, color="blue", linetype="dashed") + 
+    geom_hline(yintercept=1, linetype=3, size=0.5, color="grey") +
+    geom_histogram(aes(y=..density..), bins=12, fill="black", color="white") +
     theme_void() +
     theme(plot.title = element_blank(),
-          # axis.text = element_text(size=6, color="black"),
-          # panel.grid = element_blank(),
           aspect.ratio = 1/1) +
     labs(x=NULL, y=NULL)
+  
+  if (j == 1) {
+    p <- p + annotate("text", x=0.48, y=3, size=3.5, label=params$params) 
+  } else if (j == 2) {
+    p <- p + ylim(0, 1.25) +
+    annotate("text", x=0.48, y=1.2, size=3.5, label=params$params)
+  } else {
+    p <- p + ylim(0, 1.45) +
+    annotate("text", x=0.48, y=1.4, size=3.5, label=params$params)
+  }
   
   pl[[i+4]] <- p
 }
 
 
 ## create row labels
-# row_labs <- c("a2 = 0.5*a1", "a2 = a1", "a2 = 1.5*a1")
 row_labs <- c("A", "B", "C")
 col_labs <- c("", "Verification", "Member 1", "Member 2", "Member 3", "FTE Histogram")
 
 ## figure matrix
-# grd <- rbind(tableGrob(t(col_labs), theme = ttheme_minimal()), 
-#                  cbind(tableGrob(row_labs, theme = ttheme_minimal(core=list(fg_params=list(rot=90)))), 
-#                        arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
 tt <- ttheme_minimal(core = list(fg_params=list(fontface="bold")))
 grd <- rbind(tableGrob(t(col_labs), theme = tt), 
              cbind(tableGrob(row_labs, theme = tt), 

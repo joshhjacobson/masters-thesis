@@ -21,23 +21,26 @@ ratio_labs <- c(
 
 png("beta_params_tau.png", units="in", height=2.2, width=8.4, res=200, pointsize=10)
 
-ggplot(data=df, aes(x=tau, y=value, color=variable)) +
+ggplot(data=df, aes(x=tau, y=value, color=variable, linetype=variable)) +
   facet_grid(~ratio, labeller = as_labeller(ratio_labs)) +
-  geom_line() + 
-  scale_colour_manual(values=c(a="red", b="slateblue3")) +
+  geom_hline(yintercept=1, linetype=3, size=0.2) +
+  geom_line(size=0.25) + 
+  geom_point(size=0.6) +
+  scale_colour_manual(values=c(a="darkred", b="skyblue3")) +
+  scale_linetype_manual(breaks=c("a","b"), values=c(2, 1)) +
   scale_y_continuous(breaks = c(0.5, 1.0, 1.5)) +
-  labs(x="threshold", y="parameter") +
+  labs(x="Threshold", y="Parameter") +
   theme_bw() +
   theme(legend.title = element_blank(),
         strip.background = element_blank(),
         text = element_text(color="black"),
         strip.text= element_text(size=12),
-        axis.text = element_text(size=9),
+        axis.text = element_text(size=9, color="black"),
         legend.text = element_text(size=10),
         panel.grid.minor = element_blank(),
-        panel.grid.major = element_line(linetype="dashed", size=0.2),
+        panel.grid.major = element_blank(),
         aspect.ratio = 1/1,
-        plot.margin = unit(c(0,0,0,0), "cm"))
+        plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 dev.off()
 

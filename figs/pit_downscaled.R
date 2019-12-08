@@ -48,6 +48,7 @@ png("pit_downscaled.png", units="in", height=2.3, width=8, res=200, pointsize=10
 ranks_df %>% 
   mutate(month = month(date)) %>%
   ggplot(aes(x=rank)) +
+  geom_hline(yintercept=1, linetype=3, size=0.3, color="grey") +
   geom_histogram(aes(y=..density..), bins=12, fill="black", color="white") +
   facet_wrap(~month, ncol=4, labeller=as_labeller(month_labs)) +
   labs(y="", x="") +
@@ -56,14 +57,14 @@ ranks_df %>%
         strip.background = element_blank(),
         text = element_text(color="black"),
         strip.text= element_text(size=12, face="bold"),
-        axis.text = element_text(size=9),
+        axis.text = element_text(size=9, color="black"),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
-        panel.grid.major = element_line(linetype="dashed", size=0.2),
+        panel.grid.major = element_blank(),
         aspect.ratio = 1/1,
-        plot.margin = unit(c(0,0,0,0), "cm"))
+        plot.margin = unit(c(0,0.1,0,0), "cm"))
 
 dev.off()
 

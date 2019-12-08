@@ -13,28 +13,33 @@ df <- cont_fit_tab %>%
   melt(id.vars=c("s1", "ratio"))
 
 range_labs <- c(
-  `1` = "a1 = 1",
-  `3` = "a1 = 3"
+  `1` = "a0 = 1",
+  `3` = "a0 = 3"
 )
 
 png("beta_params_range.png", units="in", height=3.3, width=6.4, res=200, pointsize=9)
 
-ggplot(data=df, aes(x=log(ratio), y=value, color=variable)) +
+ggplot(data=df, aes(x=ratio, y=value, color=variable, linetype=variable)) +
   facet_grid(~s1, labeller = as_labeller(range_labs)) +
-  geom_line() + 
-  scale_colour_manual(values=c(a="red", b="slateblue3")) +
-  labs(x="log(ratio)", y="parameter") +
+  geom_hline(yintercept=1, linetype=3, size=0.3) +
+  geom_line(size=0.3) + 
+  geom_point(size=0.8) +
+  scale_colour_manual(values=c(a="darkred", b="skyblue3")) +
+  scale_linetype_manual(breaks=c("a","b"), values=c(2, 1)) +
+  scale_y_continuous(breaks = c(0.75, 1.0, 1.25)) +
+  labs(x="Ratio", y="Parameter") +
   theme_bw() +
   theme(legend.title = element_blank(),
         strip.background = element_blank(),
         text = element_text(color="black"),
         strip.text= element_text(size=12),
-        axis.text = element_text(size=9),
+        axis.text = element_text(size=9, color="black"),
         legend.text = element_text(size=10),
         panel.grid.minor = element_blank(),
-        panel.grid.major = element_line(linetype="dashed", size=0.2),
+        panel.grid.major = element_blank(),
+        # panel.grid.major = element_line(linetype="dashed", size=0.2),
         aspect.ratio = 1/1,
-        plot.margin = unit(c(0,0,0,0), "cm"))
+        plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 dev.off()
 
