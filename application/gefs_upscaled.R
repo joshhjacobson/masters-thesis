@@ -34,12 +34,13 @@ field_dat[,,,2:12] <- fcst_ens[lon_idx, lat_idx, , ]
 nc_close(ncin)
 rm(ncin, anal_upsc, fcst_ens, init_anal, lats_fcst, lons_fcst, lat_idx, lon_idx)
 
-# library(fields)
-# library(maps)
-# map('state')
-# image.plot(lons_eff,lats_eff,apcp_fcst_ens[lon_idx,lat_idx,1,16])
-# image.plot(lons_fcst[lon_idx,1],lats_fcst[1,lat_idx],e_eff[,,1,16])
-# map('state',add=TRUE)
+library(fields)
+library(maps)
+map('state')
+image.plot(lons_fcst, lats_fcst, fcst_ens[lon_idx,lat_idx,1,16])
+image.plot(lons_fcst[lon_idx,1], lats_fcst[1,lat_idx], fcst_ens[,,1,16])
+map('state',add=TRUE)
+image.plot(field_dat[,,16,2], col=brewer.pal(9, "BuPu"), nx=200, ny=200)
 
 
 # Threshold exceedence ranking --------------------------------------------

@@ -32,7 +32,7 @@ rng <- c(a1, sqrt(a1*a2), a2)
 rho <- rhored_search(xi, smooth, rng, var)
 
 ## model
-set.seed(10)
+set.seed(202003013)
 model_biwm <- RMbiwm(nu=smooth, s=rng, cdiag=var, rhored=rho)
 sim <- RFsimulate(model_biwm, x, y)
 
@@ -68,7 +68,7 @@ demo_ens_sim <- function(a1, a2) {
   rho <- rhored_search(xi, smooth, rng, var)
   
   # model
-  set.seed(0)
+  set.seed(202003013)
   model_biwm <- RMbiwm(nu=smooth, s=rng, cdiag=var, rhored=rho)
   sim <- RFsimulate(model_biwm, x, y)
   
@@ -123,7 +123,7 @@ plot_binary <- function(fields, tau=1, inc_lab=TRUE) {
         if (i == 1) {
           p <- p + labs(x="",y="",title="Analysis")
         } else {
-          p <- p + labs(x="",y="",title=paste("Forecast ", i-1, sep = ""))
+          p <- p + labs(x="",y="",title=paste("Member ", i-1, sep = ""))
         }
       }
       # add each plot into plot list
@@ -135,12 +135,47 @@ plot_binary <- function(fields, tau=1, inc_lab=TRUE) {
 }
 
 fields <- demo_ens_sim(a1, a2)
+
 plist <- plot_binary(fields)
-
-png("full_set.png", units="in", height=6.2, width=6, res=200, pointsize=10)
-
+png("example_fields_binary.png", units="in", height=6.2, width=6, res=200, pointsize=10)
 grid.arrange(
   arrangeGrob(grobs=plist, ncol=4)
 )
+dev.off()
+
+
+# plot the fields manually
+x <- y <- seq(-20, 20, 0.2)
+
+## format data as xyz dataframe 
+dat <- expand.grid(x = x, y = y)
+dat["z"] <- fields[,1]
+
+l.min <- floor(min(fields[,1]))
+l.max <- ceiling(max(fields[,1]))
+
+# png("obs_mean.png", units="in", width=6, height=3.2, res=280, pointsize=9)
+png("example_fields.png", units="in", height=5.2, width=6, res=280, pointsize=9)
+par(mfrow=c(3, 4))
+par(mar=c(3,3,4,2)+0.1)
+par(cex.main=1.4, xaxt="n", yaxt="n",
+    mai=c(.5,1,.6,.4), mar=c(1,1,3,1), oma=c(1.5,1.5,1.5,1.5))
+
+## build plot list
+for (i in 1:ncol(fields)) {
+  # update data being plotted
+  dat$z <- fields[,i]
+  
+  if (i == 1) {
+    quilt.plot(dat, col=brewer.pal(9, "BuPu"), nx=200, ny=200, 
+               zlim = range(dat$z) + c(-0.4, 0.4), add.legend=FALSE,
+               main="Analysis")
+  } else {
+    quilt.plot(dat, col=brewer.pal(9, "BuPu"), nx=200, ny=200, 
+               zlim = range(fields[, 1]) + c(-0.4, 0.4), add.legend=FALSE,
+               main=paste("Member ", i-1, sep = ""))
+  }
+}
 
 dev.off()
+ 

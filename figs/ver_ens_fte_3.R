@@ -3,6 +3,7 @@
 
 library(RandomFields)
 library(fields)
+library(fitdistrplus)
 library(tidyverse)
 library(gridExtra)
 library(RColorBrewer)
@@ -63,7 +64,7 @@ rank_tab <- rank_tab %>% mutate(rank = (rank-0.5)/12)
 
 ## range parameters and grid
 a1 <- 2
-a2 <- c(1, 2, 3)
+a2 <- c(0.9*a1, a1, 1.1*a1)
 tau_ <- 2
 x <- y <- seq(-20, 20, 0.2)
 
@@ -101,7 +102,7 @@ for (i in seq(1,11,5)){
     mutate(rank = sapply(rank, disagg_rank)) %>%
     summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
     separate(params, c('a', 'b'), sep=" ") %>%
-    mutate(a=round(as.numeric(a), 3), b=round(as.numeric(b),3)) %>%
+    mutate(a=round(as.numeric(a),3), b=round(as.numeric(b),3)) %>%
     unite(params, a:b, sep = ", ")
   
   p <- ggplot(df, aes(rank)) +
@@ -113,13 +114,13 @@ for (i in seq(1,11,5)){
     labs(x=NULL, y=NULL)
   
   if (j == 1) {
-    p <- p + annotate("text", x=0.48, y=3.25, size=3.5, label=params$params) 
+    p <- p + annotate("text", x=0.48, y=1.22, size=3.5, label=params$params) 
   } else if (j == 2) {
     p <- p + ylim(0, 1.25) +
       annotate("text", x=0.48, y=1.2, size=3.5, label=params$params)
   } else {
-    p <- p + ylim(0, 1.55) +
-      annotate("text", x=0.48, y=1.5, size=3.5, label=params$params)
+    p <- p + ylim(0, 1.35) +
+      annotate("text", x=0.48, y=1.3, size=3.5, label=params$params)
   }
   
   pl[[i+4]] <- p

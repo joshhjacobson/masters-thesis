@@ -98,7 +98,7 @@ png("fte_demo_beta.png", units="in", height=4, width=4, res=300, pointsize=10)
 
 ggplot(dat_cup, aes(Underdispersed)) +
   geom_histogram(aes(y=..density..), bins=14, fill="black", color="white") +
-  stat_function(fun = dbeta, args = c(0.68, 0.73), color = "dodgerblue") +
+  stat_function(fun = dbeta, args = c(0.68, 0.73), color = "skyblue3") +
   scale_x_continuous(limits=c(0,1)) +
   scale_y_continuous(breaks = 1, limits = c(0, 1.3)) +
   theme_minimal() +
