@@ -121,7 +121,7 @@ plot_binary <- function(fields, tau=1, inc_lab=TRUE) {
         p <- p + labs(x="",y="",title="")
       } else {
         if (i == 1) {
-          p <- p + labs(x="",y="",title="Analysis")
+          p <- p + labs(x="",y="",title="Verification")
         } else {
           p <- p + labs(x="",y="",title=paste("Member ", i-1, sep = ""))
         }
@@ -169,7 +169,7 @@ for (i in 1:ncol(fields)) {
   if (i == 1) {
     quilt.plot(dat, col=brewer.pal(9, "BuPu"), nx=200, ny=200, 
                zlim = range(dat$z) + c(-0.4, 0.4), add.legend=FALSE,
-               main="Analysis")
+               main="Verification")
   } else {
     quilt.plot(dat, col=brewer.pal(9, "BuPu"), nx=200, ny=200, 
                zlim = range(fields[, 1]) + c(-0.4, 0.4), add.legend=FALSE,
